@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bm162matyglma"]
+
+[ext_resource type="Script" uid="uid://bbr6ty0pvn06y" path="res://bullet_spawn.gd" id="1_2puyh"]
+[ext_resource type="PackedScene" uid="uid://bmvtsewyhtgba" path="res://bullet.tscn" id="2_6emhd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hvtdq"]
+
+[node name="BulletSpawn" type="Area2D" unique_id=2033032853]
+script = ExtResource("1_2puyh")
+bullet_scene = ExtResource("2_6emhd")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=608612395]
+shape = SubResource("RectangleShape2D_hvtdq")

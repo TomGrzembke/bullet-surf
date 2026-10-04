@@ -1,19 +1,27 @@
 [gd_scene format=3 uid="uid://d4nbuth0vsi6a"]
 
-[ext_resource type="Texture2D" uid="uid://ctxp84ncekwrh" path="res://Circle.png" id="1_pq8q7"]
+[ext_resource type="PackedScene" uid="uid://dv7brhxwler72" path="res://player.tscn" id="1_pq8q7"]
+[ext_resource type="PackedScene" uid="uid://bm162matyglma" path="res://bullet_spawn.tscn" id="2_vvh5c"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_hvtdq"]
-radius = 93.64828
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6emhd"]
+size = Vector2(498, 20)
 
 [node name="Root" type="Node2D" unique_id=290394686]
 
-[node name="Player" type="RigidBody2D" parent="." unique_id=1985978732]
-position = Vector2(573, 515)
-gravity_scale = 0.0
+[node name="Player" parent="." unique_id=1232459265 instance=ExtResource("1_pq8q7")]
 
-[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=1696815508]
-scale = Vector2(0.72954607, 0.72954607)
-texture = ExtResource("1_pq8q7")
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=169432101]
+position = Vector2(0, -350)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=180499836]
-shape = SubResource("CircleShape2D_hvtdq")
+[node name="BulletSpawnPoint" type="Node2D" parent="Player" unique_id=1856562774]
+position = Vector2(0, -965)
+
+[node name="BulletSpawn" parent="." unique_id=1153249258 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("2_vvh5c")]
+position = Vector2(0, -959)
+bullet_spawn_intervall = 0.5
+bullet_holder = NodePath("..")
+
+[node name="CollisionShape2D" parent="BulletSpawn" index="0" unique_id=608612395]
+shape = SubResource("RectangleShape2D_6emhd")
+
+[editable path="BulletSpawn"]
