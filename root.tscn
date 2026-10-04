@@ -18,7 +18,7 @@ position = Vector2(0, -965)
 
 [node name="BulletSpawn" parent="." unique_id=1153249258 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("2_vvh5c")]
 position = Vector2(0, -959)
-bullet_spawn_intervall = 0.5
+bullet_spawn_intervall = 0.7
 bullet_holder = NodePath("..")
 
 [node name="CollisionShape2D" parent="BulletSpawn" index="0" unique_id=608612395]
