@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://b8va46gjrdgon" path="res://Square.png" id="4_28aoi"]
 [ext_resource type="Script" uid="uid://dvqi135ysy0i" path="res://ui.gd" id="5_jnlp7"]
 [ext_resource type="PackedScene" uid="uid://bbpythex6xqg3" path="res://checkmark.tscn" id="6_ns2nk"]
+[ext_resource type="Script" uid="uid://dl0pgo3ytyojy" path="res://difficulty_manager.gd" id="7_difficulty"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6emhd"]
 size = Vector2(498, 20)
@@ -15,9 +16,22 @@ size = Vector2(255.77995, 247.80257)
 
 [node name="Root" type="Node2D" unique_id=290394686]
 
-[node name="Player" parent="." unique_id=1232459265 instance=ExtResource("1_pq8q7")]
-jump_speed = 1001
-bullet_holder = NodePath("..")
+[node name="BulletHolder" type="Node" parent="." unique_id=1274992567]
+
+[node name="DifficultyManager" type="Node" parent="." unique_id=107323586]
+script = ExtResource("7_difficulty")
+player_path = NodePath("Player")
+bullet_holder_path = NodePath("BulletHolder")
+bullet_spawn_path = NodePath("BulletSpawn")
+jump_speed_base = 690
+jump_speed_increase_per_100m = 170
+jump_speed_max = 5000
+bullet_break_time_min = 0.35
+bullet_velocity_max = 700
+spawn_interval_min = 0.2
+
+[node name="Player" parent="." unique_id=1232459265 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("1_pq8q7")]
+bullet_holder = NodePath("../BulletHolder")
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=169432101]
 position = Vector2(0, -350)
@@ -27,8 +41,7 @@ position = Vector2(0, -965)
 
 [node name="BulletSpawn" parent="." unique_id=1153249258 node_paths=PackedStringArray("bullet_holder", "bullet_spawn_point") instance=ExtResource("2_vvh5c")]
 position = Vector2(0, -959)
-bullet_spawn_intervall = 0.55
-bullet_holder = NodePath("..")
+bullet_holder = NodePath("../BulletHolder")
 bullet_spawn_point = NodePath("../Player/BulletSpawnPoint")
 
 [node name="CollisionShape2D" parent="BulletSpawn" index="0" unique_id=608612395]
@@ -51,9 +64,7 @@ shape = SubResource("RectangleShape2D_hvtdq")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=2147483647]
 script = ExtResource("5_jnlp7")
-player_path = NodePath("../Player")
 checkmark_scene = ExtResource("6_ns2nk")
-world_parent_path = NodePath("..")
 
 [node name="Panel" type="Panel" parent="UI" unique_id=-2147483647]
 anchors_preset = 10

@@ -10,6 +10,7 @@ extends CanvasLayer
 @export var cleanup_distance := 1000  # Distance behind to remove checkmarks
 
 var player: Node2D
+var camera: Camera2D
 var world_parent: Node
 var spawned_milestones := {}  # Track which milestones have been spawned
 var milestone_checkmarks := {}  # Map milestone number to checkmark node
@@ -27,6 +28,10 @@ func _ready():
 
 	# Get world parent for checkmarks
 	world_parent = get_node(world_parent_path)
+
+	# Get camera reference
+	if player:
+		camera = player.get_node("Camera2D")
 
 	# Store initial height to prevent spawning at start
 	if player:
@@ -46,6 +51,7 @@ func _manage_milestone_checkmarks():
 		return
 
 	var player_y = player.global_position.y
+	var camera_x = camera.global_position.x if camera else 0
 
 	# Only start spawning after player has moved from initial position
 	if !has_started:
@@ -60,10 +66,16 @@ func _manage_milestone_checkmarks():
 	# Spawn next few milestones ahead (only if not already spawned)
 	for i in range(current_milestone + 1, current_milestone + 5):
 		if !spawned_milestones.has(i):
-			var checkmark = _spawn_checkmark_for_milestone(i)
+			var checkmark = _spawn_checkmark_for_milestone(i, camera_x)
 			if checkmark:
 				spawned_milestones[i] = true
 				milestone_checkmarks[i] = checkmark
+
+	# Sync existing checkmarks to camera X position
+	for milestone in milestone_checkmarks.keys():
+		var checkmark = milestone_checkmarks[milestone]
+		if is_instance_valid(checkmark):
+			checkmark.global_position.x = camera_x
 
 	# Cleanup old milestones behind player
 	for milestone in milestone_checkmarks.keys():
@@ -79,15 +91,15 @@ func _manage_milestone_checkmarks():
 			milestone_checkmarks.erase(milestone)
 			spawned_milestones.erase(milestone)
 
-func _spawn_checkmark_for_milestone(milestone_num: int):
+func _spawn_checkmark_for_milestone(milestone_num: int, camera_x: float):
 	var checkmark = checkmark_scene.instantiate()
 
 	# Calculate Y position for this milestone (negative because up is negative in Godot)
 	var meters = milestone_num * 100
 	var y_position = -meters * pixels_per_meter
 
-	# Position checkmark at this milestone height
-	checkmark.global_position = Vector2(0, y_position)
+	# Position checkmark at this milestone height, synced to camera X
+	checkmark.global_position = Vector2(camera_x, y_position)
 
 	world_parent.add_child(checkmark)
 

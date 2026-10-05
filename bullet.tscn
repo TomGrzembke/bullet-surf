@@ -11,7 +11,7 @@ collision_layer = 2
 collision_mask = 0
 gravity_scale = 0.0
 script = ExtResource("1_v8qja")
-bullet_velocity_min = 320
+bullet_velocity = 200
 click_radius = 150
 wrap_buffer = 20
 

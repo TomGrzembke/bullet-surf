@@ -3,7 +3,17 @@ extends RigidBody2D
 @export var jump_speed := 400  #pixels per second
 @export var bullet_holder : Node
 @export var attach_distance := 50  # Distance at which to attach to bullet
-@export var bullet_break_time := 3.0  # Seconds before bullet breaks when attached
+@export var bullet_break_time_base := 0.9  # Base seconds before bullet breaks when attached
+@export var bullet_break_time_min := 0.3  # Minimum break time
+
+func set_jump_speed(value: float):
+	print("Setting jump_speed to: ", value)
+	jump_speed = value
+	print("Jump_speed is now: ", jump_speed)
+
+func set_bullet_break_time_base(value: float):
+	print("Setting bullet_break_time_base to: ", value)
+	bullet_break_time_base = value
 
 var is_jumping := false
 var is_attached := false
@@ -15,13 +25,14 @@ var jump_elapsed: float
 var original_parent: Node
 var attach_offset: Vector2
 var attach_time: float
+var current_break_time: float
 
 func _ready():
 	if !bullet_holder:
 		#print("ERROR: bullet_holder not set!")
 		# Try to find bullet holder automatically
-		var root = get_tree().root.get_child(get_tree().root.get_child_count() - 1)
-		bullet_holder = root
+		var root = get_parent()
+		bullet_holder = root.get_node("BulletHolder")
 
 	for bullet in bullet_holder.get_children():
 		_connect_bullet_signals(bullet)
@@ -85,7 +96,8 @@ func _process(delta):
 	# Check if attached bullet should break
 	if is_attached:
 		attach_time += delta
-		if attach_time >= bullet_break_time:
+		current_break_time = _get_current_break_time()
+		if attach_time >= current_break_time:
 			_detach_from_bullet()
 
 func _on_jump_complete():
@@ -99,6 +111,10 @@ func _attach_to_bullet(bullet: RigidBody2D):
 	attached_bullet = bullet
 	original_parent = get_parent()
 	attach_time = 0.0  # Reset break timer
+
+	# Mark bullet as used when player successfully attaches
+	if bullet.has_method("set_on_cooldown"):
+		bullet.set_on_cooldown()
 
 	# Store the global position before reparenting
 	var current_global_pos = global_position
@@ -134,3 +150,6 @@ func _detach_from_bullet(remove_bullet := true):
 	# Remove the bullet if requested
 	if bullet_to_remove:
 		bullet_to_remove.queue_free()
+
+func _get_current_break_time() -> float:
+	return bullet_break_time_base
