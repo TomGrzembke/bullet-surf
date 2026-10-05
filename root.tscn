@@ -3,9 +3,13 @@
 [ext_resource type="PackedScene" uid="uid://dv7brhxwler72" path="res://player.tscn" id="1_pq8q7"]
 [ext_resource type="PackedScene" uid="uid://bm162matyglma" path="res://bullet_spawn.tscn" id="2_vvh5c"]
 [ext_resource type="PackedScene" uid="uid://boie65t2igbgn" path="res://bg.tscn" id="3_vvh5c"]
+[ext_resource type="Texture2D" uid="uid://b8va46gjrdgon" path="res://Square.png" id="4_28aoi"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6emhd"]
 size = Vector2(498, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hvtdq"]
+size = Vector2(255.77995, 247.80257)
 
 [node name="Root" type="Node2D" unique_id=290394686]
 
@@ -27,6 +31,19 @@ bullet_spawn_point = NodePath("../Player/BulletSpawnPoint")
 [node name="CollisionShape2D" parent="BulletSpawn" index="0" unique_id=608612395]
 shape = SubResource("RectangleShape2D_6emhd")
 
-[node name="BG" parent="." unique_id=477930152 instance=ExtResource("3_vvh5c")]
+[node name="LoopingBG" parent="." unique_id=477930152 instance=ExtResource("3_vvh5c")]
+
+[node name="Ground" type="Sprite2D" parent="." unique_id=967031519]
+modulate = Color(0.5432565, 0.5182228, 0.56698006, 1)
+z_index = -5
+position = Vector2(5, 372)
+scale = Vector2(28.379866, 2.259864)
+texture = ExtResource("4_28aoi")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Ground" unique_id=1921647187]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground/StaticBody2D" unique_id=1905710925]
+position = Vector2(0.47568935, 0.88500977)
+shape = SubResource("RectangleShape2D_hvtdq")
 
 [editable path="BulletSpawn"]

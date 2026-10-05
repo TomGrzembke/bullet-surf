@@ -49,11 +49,11 @@ func _check_screen_wrap():
 	var screen_right = camera.global_position.x + viewport_size.x / 2
 
 	# Wrap vertically (bottom to top)
-	#if global_position.y > screen_bottom + wrap_buffer:
-	#	global_position.y = screen_top - wrap_buffer
+	#if global_position.y > screen_bottom + click_radius:
+	#	global_position.y = screen_top - click_radius
 	# Wrap vertically (top to bottom)
-	#elif global_position.y < screen_top - wrap_buffer:
-	#	global_position.y = screen_bottom + wrap_buffer
+	#elif global_position.y < screen_top - click_radius:
+	#	global_position.y = screen_bottom + click_radius
 
 	# Wrap horizontally (right to left) - spawn new bullet on left
 	if can_spawn_wrapped and !has_spawned_wrapped and global_position.x > screen_right + wrap_buffer:
