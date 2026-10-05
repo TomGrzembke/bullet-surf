@@ -9,6 +9,7 @@ size = Vector2(498, 20)
 [node name="Root" type="Node2D" unique_id=290394686]
 
 [node name="Player" parent="." unique_id=1232459265 instance=ExtResource("1_pq8q7")]
+bullet_holder = NodePath("..")
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=169432101]
 position = Vector2(0, -350)
