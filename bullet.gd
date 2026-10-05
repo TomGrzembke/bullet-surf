@@ -15,6 +15,7 @@ var is_hovered := false
 var camera: Camera2D
 var can_spawn_wrapped := true  # Only original bullets can spawn wrapped bullets
 var has_spawned_wrapped := false  # Track if this bullet already spawned a wrapped one
+var has_been_clicked := false  # Track if this bullet has been clicked
 
 func _ready():
 	bullet_velocity = randf_range(bullet_velocity_min, bullet_velocity_max)
@@ -67,10 +68,10 @@ func _check_screen_wrap():
 		has_spawned_wrapped = true
 
 func _input(event):
-	# Only process input if mouse is over THIS bullet
-	if is_hovered and event is InputEventMouseButton and event.pressed:
+	# Only process input if mouse is over THIS bullet and hasn't been clicked yet
+	if is_hovered and !has_been_clicked and event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			#print("Bullet clicked: ", name)
+			has_been_clicked = true
 			bullet_clicked.emit(self)
 
 func _on_mouse_entered():

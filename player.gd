@@ -3,6 +3,7 @@ extends RigidBody2D
 @export var jump_speed := 400  #pixels per second
 @export var bullet_holder : Node
 @export var attach_distance := 50  # Distance at which to attach to bullet
+@export var bullet_break_time := 3.0  # Seconds before bullet breaks when attached
 
 var is_jumping := false
 var is_attached := false
@@ -13,6 +14,7 @@ var jump_duration: float
 var jump_elapsed: float
 var original_parent: Node
 var attach_offset: Vector2
+var attach_time: float
 
 func _ready():
 	if !bullet_holder:
@@ -34,9 +36,9 @@ func _on_bullet_spawned(node: Node):
 	_connect_bullet_signals(node)
 
 func _on_bullet_clicked(bullet: RigidBody2D):
-	# If attached, detach first
+	# If attached, detach first (but don't remove the old bullet)
 	if is_attached:
-		_detach_from_bullet()
+		_detach_from_bullet(false)
 
 	if is_jumping:
 		# Start new jump from current position to new bullet
@@ -80,6 +82,12 @@ func _process(delta):
 		if progress >= 1.0:
 			_on_jump_complete()
 
+	# Check if attached bullet should break
+	if is_attached:
+		attach_time += delta
+		if attach_time >= bullet_break_time:
+			_detach_from_bullet()
+
 func _on_jump_complete():
 	is_jumping = false
 	target_bullet = null
@@ -90,6 +98,7 @@ func _attach_to_bullet(bullet: RigidBody2D):
 	is_attached = true
 	attached_bullet = bullet
 	original_parent = get_parent()
+	attach_time = 0.0  # Reset break timer
 
 	# Store the global position before reparenting
 	var current_global_pos = global_position
@@ -105,9 +114,12 @@ func _attach_to_bullet(bullet: RigidBody2D):
 
 	freeze = true  # Disable physics while attached
 
-func _detach_from_bullet():
+func _detach_from_bullet(remove_bullet := true):
 	if !is_attached or !attached_bullet:
 		return
+
+	# Store reference to bullet before detaching
+	var bullet_to_remove = attached_bullet if remove_bullet else null
 
 	# Reparent back to original parent
 	reparent(original_parent)
@@ -118,3 +130,7 @@ func _detach_from_bullet():
 	original_parent = null
 	freeze = false  # Re-enable physics
 	linear_velocity = Vector2.ZERO
+
+	# Remove the bullet if requested
+	if bullet_to_remove:
+		bullet_to_remove.queue_free()
