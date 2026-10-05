@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://bm162matyglma" path="res://bullet_spawn.tscn" id="2_vvh5c"]
 [ext_resource type="PackedScene" uid="uid://boie65t2igbgn" path="res://bg.tscn" id="3_vvh5c"]
 [ext_resource type="Texture2D" uid="uid://b8va46gjrdgon" path="res://Square.png" id="4_28aoi"]
+[ext_resource type="Script" uid="uid://dvqi135ysy0i" path="res://ui.gd" id="5_jnlp7"]
+[ext_resource type="PackedScene" uid="uid://bbpythex6xqg3" path="res://checkmark.tscn" id="6_ns2nk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6emhd"]
 size = Vector2(498, 20)
@@ -46,5 +48,27 @@ texture = ExtResource("4_28aoi")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground/StaticBody2D" unique_id=1905710925]
 position = Vector2(0.47568935, 0.88500977)
 shape = SubResource("RectangleShape2D_hvtdq")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=2147483647]
+script = ExtResource("5_jnlp7")
+player_path = NodePath("../Player")
+checkmark_scene = ExtResource("6_ns2nk")
+world_parent_path = NodePath("..")
+
+[node name="Panel" type="Panel" parent="UI" unique_id=-2147483647]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+grow_horizontal = 0
+
+[node name="HeightLabel" type="Label" parent="UI" unique_id=-2147483648]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 40.0
+grow_horizontal = 0
+text = "Height: 0m"
 
 [editable path="BulletSpawn"]

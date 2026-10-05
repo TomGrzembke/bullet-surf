@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bbpythex6xqg3"]
+
+[ext_resource type="Texture2D" uid="uid://b8va46gjrdgon" path="res://Square.png" id="1_ns2nk"]
+
+[node name="Checkmark" type="Sprite2D" unique_id=961407947]
+modulate = Color(1, 1, 0.21960784, 1)
+scale = Vector2(11.399999, 0.036505118)
+texture = ExtResource("1_ns2nk")
