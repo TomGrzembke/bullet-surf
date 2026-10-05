@@ -9,27 +9,34 @@ script = ExtResource("1_tuaf8")
 [node name="Square" type="Sprite2D" parent="." unique_id=501692098]
 modulate = Color(0.14126968, 0.6152309, 0.4757697, 1)
 z_index = -5
-position = Vector2(5, -50)
+position = Vector2(5, -38.737305)
 scale = Vector2(28.379866, 2.259864)
 texture = ExtResource("1_t4gw0")
 
 [node name="Square2" type="Sprite2D" parent="." unique_id=1130459580]
 modulate = Color(0.2982979, 0.5916245, 0.52811813, 1)
 z_index = -5
-position = Vector2(5, -629)
+position = Vector2(5, -608.7373)
 scale = Vector2(28.379866, 2.259864)
 texture = ExtResource("1_t4gw0")
 
 [node name="Square3" type="Sprite2D" parent="." unique_id=1230829432]
 modulate = Color(0.14126968, 0.6152309, 0.4757697, 1)
 z_index = -5
-position = Vector2(5, -1209.7374)
+position = Vector2(5, -1172.4747)
 scale = Vector2(28.379866, 2.259864)
 texture = ExtResource("1_t4gw0")
 
 [node name="Square4" type="Sprite2D" parent="." unique_id=663954219]
 modulate = Color(0.2982979, 0.5916245, 0.52811813, 1)
 z_index = -5
-position = Vector2(5, -1788.7374)
+position = Vector2(7.0000005, -1725.7374)
+scale = Vector2(28.379866, 2.259864)
+texture = ExtResource("1_t4gw0")
+
+[node name="Square5" type="Sprite2D" parent="." unique_id=756159139]
+modulate = Color(0.29803923, 0.5921569, 0.5294118, 1)
+z_index = -5
+position = Vector2(5, 507)
 scale = Vector2(28.379866, 2.259864)
 texture = ExtResource("1_t4gw0")
