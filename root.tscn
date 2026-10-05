@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://d4nbuth0vsi6a"]
 
 [ext_resource type="PackedScene" uid="uid://dv7brhxwler72" path="res://player.tscn" id="1_pq8q7"]
-[ext_resource type="Texture2D" uid="uid://0qd633mte3l8" path="res://Star.png" id="2_28aoi"]
 [ext_resource type="PackedScene" uid="uid://bm162matyglma" path="res://bullet_spawn.tscn" id="2_vvh5c"]
+[ext_resource type="PackedScene" uid="uid://boie65t2igbgn" path="res://bg.tscn" id="3_vvh5c"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6emhd"]
 size = Vector2(498, 20)
@@ -10,7 +10,7 @@ size = Vector2(498, 20)
 [node name="Root" type="Node2D" unique_id=290394686]
 
 [node name="Player" parent="." unique_id=1232459265 instance=ExtResource("1_pq8q7")]
-bullet_holder = NodePath("..")
+jump_speed = 1001
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=169432101]
 position = Vector2(0, -350)
@@ -18,18 +18,15 @@ position = Vector2(0, -350)
 [node name="BulletSpawnPoint" type="Node2D" parent="Player" unique_id=1856562774]
 position = Vector2(0, -965)
 
-[node name="Star" type="Sprite2D" parent="Player/BulletSpawnPoint" unique_id=1143478743]
-position = Vector2(-3, -4)
-scale = Vector2(0.3992672, 0.3992672)
-texture = ExtResource("2_28aoi")
-
 [node name="BulletSpawn" parent="." unique_id=1153249258 node_paths=PackedStringArray("bullet_holder", "bullet_spawn_point") instance=ExtResource("2_vvh5c")]
 position = Vector2(0, -959)
-bullet_spawn_intervall = 0.7
+bullet_spawn_intervall = 0.55
 bullet_holder = NodePath("..")
 bullet_spawn_point = NodePath("../Player/BulletSpawnPoint")
 
 [node name="CollisionShape2D" parent="BulletSpawn" index="0" unique_id=608612395]
 shape = SubResource("RectangleShape2D_6emhd")
+
+[node name="BG" parent="." unique_id=477930152 instance=ExtResource("3_vvh5c")]
 
 [editable path="BulletSpawn"]

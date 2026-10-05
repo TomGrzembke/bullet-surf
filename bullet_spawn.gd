@@ -10,6 +10,25 @@ extends Node2D
 
 var current_spawntime := 0.
 
+func _ready():
+	# Listen for wrap spawn requests from bullets
+	bullet_holder.child_entered_tree.connect(_on_bullet_added)
+
+	# Connect to existing bullets
+	for bullet in bullet_holder.get_children():
+		_on_bullet_added(bullet)
+
+func _on_bullet_added(node: Node):
+	if node.has_signal("bullet_spawn_request"):
+		node.bullet_spawn_request.connect(_spawn_wrapped_bullet)
+
+func _spawn_wrapped_bullet(position: Vector2, velocity: Vector2):
+	var new_bullet = bullet_scene.instantiate()
+	new_bullet.global_position = position
+	new_bullet.linear_velocity = velocity
+	new_bullet.can_spawn_wrapped = false  # Wrapped bullets cannot spawn more
+	bullet_holder.add_child(new_bullet)
+
 func _process(delta):
 	current_spawntime += delta
 
