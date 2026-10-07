@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://dvqi135ysy0i" path="res://ui.gd" id="5_jnlp7"]
 [ext_resource type="PackedScene" uid="uid://bbpythex6xqg3" path="res://checkmark.tscn" id="6_ns2nk"]
 [ext_resource type="Script" uid="uid://dl0pgo3ytyojy" path="res://difficulty_manager.gd" id="7_difficulty"]
+[ext_resource type="Script" uid="uid://4rdtlch43bdc" path="res://poki_base.gd" id="8_bf3um"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6emhd"]
 size = Vector2(498, 20)
@@ -23,8 +24,8 @@ script = ExtResource("7_difficulty")
 player_path = NodePath("Player")
 bullet_holder_path = NodePath("BulletHolder")
 bullet_spawn_path = NodePath("BulletSpawn")
-jump_speed_base = 690
-jump_speed_increase_per_100m = 170
+jump_speed_base = 711
+jump_speed_increase_per_100m = 195
 jump_speed_max = 5000
 bullet_break_time_min = 0.35
 bullet_velocity_max = 700
@@ -81,5 +82,8 @@ offset_right = -10.0
 offset_bottom = 40.0
 grow_horizontal = 0
 text = "Height: 0m"
+
+[node name="PokiBase" type="Node" parent="." unique_id=1173744218]
+script = ExtResource("8_bf3um")
 
 [editable path="BulletSpawn"]
