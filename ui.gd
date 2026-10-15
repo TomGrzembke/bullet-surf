@@ -3,7 +3,9 @@ extends CanvasLayer
 @onready var height_label = $HeightLabel
 
 @export var pixels_per_meter := 100  # 100 pixels = 1 meter
+
 @export var player_path: NodePath = NodePath("../Player")
+@export var milestone_mark := 100  # 100 pixels = 1 meter
 @export var checkmark_scene: PackedScene
 @export var world_parent_path: NodePath = NodePath("..")  # Parent for world-space checkmarks
 @export var spawn_distance := 500  # Distance in pixels ahead to spawn checkmarks
@@ -61,7 +63,7 @@ func _manage_milestone_checkmarks():
 			return
 
 	# Calculate which milestones should be visible
-	var current_milestone = int(abs(player_y) / (100 * pixels_per_meter))
+	var current_milestone = int(abs(player_y) / (milestone_mark * pixels_per_meter))
 
 	# Spawn next few milestones ahead (only if not already spawned)
 	for i in range(current_milestone + 1, current_milestone + 5):
@@ -95,7 +97,7 @@ func _spawn_checkmark_for_milestone(milestone_num: int, camera_x: float):
 	var checkmark = checkmark_scene.instantiate()
 
 	# Calculate Y position for this milestone (negative because up is negative in Godot)
-	var meters = milestone_num * 100
+	var meters = milestone_num * milestone_mark
 	var y_position = -meters * pixels_per_meter
 
 	# Position checkmark at this milestone height, synced to camera X

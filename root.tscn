@@ -28,7 +28,8 @@ jump_speed_base = 711
 jump_speed_increase_per_100m = 195
 jump_speed_max = 5000
 bullet_break_time_min = 0.35
-bullet_velocity_max = 700
+bullet_velocity_base = 260
+bullet_velocity_max = 800
 spawn_interval_min = 0.2
 
 [node name="Player" parent="." unique_id=1232459265 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("1_pq8q7")]
@@ -65,6 +66,7 @@ shape = SubResource("RectangleShape2D_hvtdq")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=2147483647]
 script = ExtResource("5_jnlp7")
+milestone_mark = 25
 checkmark_scene = ExtResource("6_ns2nk")
 
 [node name="Panel" type="Panel" parent="UI" unique_id=-2147483647]
