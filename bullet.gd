@@ -16,8 +16,12 @@ var has_spawned_wrapped := false  # Track if this bullet already spawned a wrapp
 var has_been_clicked := false  # Track if this bullet has been clicked
 var click_time := 0.0  # Time when bullet was clicked
 var click_reset_time := 3.0  # Reset after 3 seconds
+var original_velocity := 0.0  # Store original velocity for reversion
 
 func _ready():
+	# Store original velocity
+	original_velocity = bullet_velocity
+
 	# Create Area2D for click detection
 	click_area = Area2D.new()
 	click_area.name = "ClickArea"
@@ -106,3 +110,12 @@ func set_on_cooldown():
 func set_bullet_velocity(velocity: float):
 	# Called by difficulty manager to update bullet velocity
 	bullet_velocity = velocity
+	original_velocity = velocity
+
+func invert_velocity():
+	# Invert the bullet velocity when player mounts
+	bullet_velocity = -bullet_velocity
+
+func revert_velocity():
+	# Revert to original velocity when player detaches
+	bullet_velocity = original_velocity

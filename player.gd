@@ -116,6 +116,10 @@ func _attach_to_bullet(bullet: RigidBody2D):
 	if bullet.has_method("set_on_cooldown"):
 		bullet.set_on_cooldown()
 
+	# Invert bullet velocity when player mounts
+	if bullet.has_method("invert_velocity"):
+		bullet.invert_velocity()
+
 	# Store the global position before reparenting
 	var current_global_pos = global_position
 
@@ -136,6 +140,10 @@ func _detach_from_bullet(remove_bullet := true):
 
 	# Store reference to bullet before detaching
 	var bullet_to_remove = attached_bullet if remove_bullet else null
+
+	# Revert bullet velocity when player detaches
+	if attached_bullet.has_method("revert_velocity"):
+		attached_bullet.revert_velocity()
 
 	# Reparent back to original parent
 	reparent(original_parent)
