@@ -82,6 +82,7 @@ offset_right = -10.0
 offset_bottom = 40.0
 grow_horizontal = 0
 text = "Height: 0m"
+horizontal_alignment = 1
 
 [node name="PokiBase" type="Node" parent="." unique_id=1173744218]
 script = ExtResource("8_bf3um")

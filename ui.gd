@@ -41,7 +41,7 @@ func _process(delta):
 	if player and height_label:
 		# Calculate height in meters (negative Y is up in Godot)
 		var height_meters = abs(player.global_position.y) / pixels_per_meter
-		height_label.text = "Height: %.1fm" % height_meters
+		height_label.text = "Height: %1.fm" % height_meters
 
 		# Spawn checkmarks ahead and cleanup behind
 		_manage_milestone_checkmarks()

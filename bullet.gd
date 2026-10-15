@@ -28,9 +28,13 @@ func _ready():
 	collision.shape.radius = click_radius
 	click_area.add_child(collision)
 
-	# Make the area detect mouse input
+	# Make the area detect mouse/touch input
 	click_area.mouse_entered.connect(_on_mouse_entered)
 	click_area.mouse_exited.connect(_on_mouse_exited)
+	click_area.input_event.connect(_on_area_input_event)
+
+	# Enable input pickup for touch
+	click_area.input_pickable = true
 
 	# Find the camera
 	camera = get_viewport().get_camera_2d()
@@ -76,6 +80,12 @@ func _check_screen_wrap():
 func _input(event):
 	# Only process input if mouse is over THIS bullet and hasn't been used yet
 	if is_hovered and !has_been_clicked and event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			bullet_clicked.emit(self)
+
+func _on_area_input_event(_viewport, event, _shape_idx):
+	# Handle touch and mouse input directly on the area
+	if !has_been_clicked and event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			bullet_clicked.emit(self)
 
