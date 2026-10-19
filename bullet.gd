@@ -1,8 +1,8 @@
-extends RigidBody2D
-
 # Handles bullet movement, click detection, and screen wrapping
 # Bullets move vertically, can be clicked by player to jump to them,
 # and wrap horizontally to spawn new bullets
+
+extends RigidBody2D
 
 signal bullet_clicked(bullet: RigidBody2D)
 signal bullet_spawn_request(position: Vector2, velocity: Vector2)
@@ -42,7 +42,7 @@ func _setup_click_area():
 	click_area.input_event.connect(_on_area_input_event)
 	click_area.input_pickable = true
 
-func _process(delta):
+func _physics_process(delta):
 	linear_velocity.y = bullet_velocity
 	_check_screen_wrap()
 	_reset_click_cooldown(delta)

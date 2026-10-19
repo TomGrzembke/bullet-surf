@@ -1,8 +1,8 @@
-extends Node
-
 # Manages game difficulty scaling based on player height/distance
 # Updates player jump speed, bullet velocity, spawn interval, and break time
 # every 100m checkpoint to progressively increase difficulty
+
+extends Node
 
 signal difficulty_updated(checkpoint: int, distance_m: float)
 
@@ -31,7 +31,6 @@ var bullet_holder: Node
 var bullet_spawn: Node2D
 
 var current_checkpoint := 0
-var last_checkpoint_distance := 0.0
 
 func _ready():
 	await get_tree().process_frame
@@ -44,7 +43,7 @@ func _initialize_node_references():
 	bullet_holder = root.get_node("BulletHolder")
 	bullet_spawn = root.get_node("BulletSpawn")
 
-func _process(delta):
+func _process(_delta):
 	if !player: return
 
 	var distance_m = abs(player.global_position.y) / 100

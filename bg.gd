@@ -1,11 +1,12 @@
+# Creates an infinite scrolling background by repositioning sprites
+
 extends Node2D
 
-# Creates an infinite scrolling background by repositioning sprites
+@export var loop_buffer := 500
 
 var camera: Camera2D
 var squares: Array[Sprite2D]
 var pattern_height: float
-@export var loop_buffer := 500
 
 func _ready():
 	_collect_squares()

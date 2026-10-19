@@ -1,5 +1,4 @@
-# The Poki HTML shell initializes the JavaScript SDK before Godot starts,
-## this autoload only forwards game events. You can configure the autoloads in project settings -> globals
+# This autoload forwards game events after the Poki HTML shell initializes its JavaScript SDK.
 
 extends Node
 

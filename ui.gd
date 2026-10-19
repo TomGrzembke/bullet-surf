@@ -1,20 +1,19 @@
-extends CanvasLayer
-
 # Handles UI display of height/travel distance and milestone checkmarks
 # Updates height label based on player position
 # Spawns and manages checkpoint markers every 100m
 
-@onready var height_label = $HeightLabel
+extends CanvasLayer
 
 @export var player_path: NodePath = NodePath("../Player")
 @export var world_parent_path: NodePath = NodePath("..")
 
 @export var pixels_per_meter := 100
 @export var milestone_mark := 100
-@export var spawn_distance := 500
 @export var cleanup_distance := 1000
 
 @export var checkmark_scene: PackedScene
+
+@onready var height_label = $HeightLabel
 
 var player: Node2D
 var camera: Camera2D
@@ -31,7 +30,7 @@ func _ready():
 	initial_height = player.global_position.y
 	height_label.text = "Height: 0m"
 
-func _process(delta):
+func _process(_delta):
 	if player and height_label:
 		var height_meters = abs(player.global_position.y) / pixels_per_meter
 		height_label.text = "Height: %1.fm" % height_meters

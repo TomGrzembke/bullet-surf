@@ -1,25 +1,22 @@
-extends Node2D
-
 # Spawns bullets at regular intervals from a spawn point
 # Handles bullet wrapping requests from existing bullets
 # Spawn interval and bullet velocity are controlled by difficulty manager
 
+extends Node2D
+
 @export var bullet_holder : Node
 @export var bullet_spawn_point : Node
-@export var player_path: NodePath = NodePath("../Player")
 
 @export var bullet_scene : PackedScene
-@export var bullet_spawn_intervall_base := 0.55
+@export var bullet_spawn_interval_base := 0.55
 
 var current_spawntime := 0.
-var player: Node2D
 var current_bullet_velocity := 200
 
 func _ready():
 	bullet_holder.child_entered_tree.connect(_on_bullet_added)
 	for bullet in bullet_holder.get_children():
 		_on_bullet_added(bullet)
-	player = get_node(player_path)
 
 func _on_bullet_added(node: Node):
 	if node.has_signal("bullet_spawn_request"):
@@ -35,7 +32,7 @@ func _spawn_wrapped_bullet(position: Vector2, velocity: Vector2):
 
 func _process(delta):
 	current_spawntime += delta
-	if current_spawntime >= bullet_spawn_intervall_base:
+	if current_spawntime >= bullet_spawn_interval_base:
 		current_spawntime = 0
 		_spawn_new_bullet()
 
@@ -57,7 +54,7 @@ func _set_bullet_velocity(bullet: RigidBody2D):
 		bullet.set_bullet_velocity(current_bullet_velocity)
 
 func set_spawn_interval(value: float):
-	bullet_spawn_intervall_base = value
+	bullet_spawn_interval_base = value
 
 func set_current_bullet_velocity(value: float):
 	current_bullet_velocity = value

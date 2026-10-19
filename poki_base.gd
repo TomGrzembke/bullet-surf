@@ -1,3 +1,5 @@
+# Starts and stops Poki gameplay reporting in response to player input.
+
 extends Node
 
 var input_count := 0

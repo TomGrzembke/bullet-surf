@@ -1,15 +1,14 @@
-extends RigidBody2D
-
 # Handles player movement, jumping to bullets, and attachment logic
 # Player jumps to bullets by clicking/tapping them, attaches temporarily,
 # and the bullet breaks after a duration controlled by difficulty manager
+
+extends RigidBody2D
 
 @export var bullet_holder : Node
 
 @export var jump_speed := 400
 @export var attach_distance := 50
 @export var bullet_break_time_base := 0.9
-@export var bullet_break_time_min := 0.3
 
 var is_jumping := false
 var is_attached := false
@@ -33,29 +32,37 @@ func _ready():
 
 	bullet_holder.child_entered_tree.connect(_on_bullet_spawned)
 
-func _process(delta):
-	if is_jumping and target_bullet:
-		jump_elapsed += delta
+func _physics_process(delta):
+	_update_jump(delta)
+	_update_attachment(delta)
 
-		var progress = min(jump_elapsed / jump_duration, 1.0)
-		var target_pos = target_bullet.global_position
-		global_position = jump_start_position.lerp(target_pos, progress)
+func _update_jump(delta):
+	if !is_jumping: return
+	if !target_bullet: return
 
-		var distance = global_position.distance_to(target_bullet.global_position)
-		if distance <= attach_distance:
-			_attach_to_bullet(target_bullet)
-			is_jumping = false
-			target_bullet = null
-			return
+	jump_elapsed += delta
 
-		if progress >= 1.0:
-			_on_jump_complete()
+	var progress = min(jump_elapsed / jump_duration, 1.0)
+	var target_pos = target_bullet.global_position
+	global_position = jump_start_position.lerp(target_pos, progress)
 
-	if is_attached:
-		attach_time += delta
-		current_break_time = _get_current_break_time()
-		if attach_time >= current_break_time:
-			_detach_from_bullet()
+	var distance = global_position.distance_to(target_bullet.global_position)
+	if distance <= attach_distance:
+		_attach_to_bullet(target_bullet)
+		is_jumping = false
+		target_bullet = null
+		return
+
+	if progress >= 1.0:
+		_on_jump_complete()
+
+func _update_attachment(delta):
+	if !is_attached: return
+
+	attach_time += delta
+	current_break_time = _get_current_break_time()
+	if attach_time >= current_break_time:
+		_detach_from_bullet()
 
 func _connect_bullet_signals(bullet: Node):
 	if bullet.has_signal("bullet_clicked"):
