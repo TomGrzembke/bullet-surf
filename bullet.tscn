@@ -11,7 +11,9 @@ radius = 150.0
 
 [node name="Bullet" type="RigidBody2D" unique_id=40867637]
 collision_layer = 2
-collision_mask = 0
+collision_mask = 4
+contact_monitor = true
+max_contacts_reported = 1
 gravity_scale = 0.0
 script = ExtResource("1_v8qja")
 wrap_buffer = 20
@@ -24,8 +26,7 @@ texture = ExtResource("1_v7oki")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2045404064]
 shape = SubResource("CircleShape2D_hvtdq")
 
-[node name="ClickArea" type="Area2D" parent="."]
-input_pickable = true
+[node name="ClickArea" type="Area2D" parent="." unique_id=166300288]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea" unique_id=1758987925]
 shape = SubResource("CircleShape2D_click_area")

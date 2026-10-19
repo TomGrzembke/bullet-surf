@@ -65,8 +65,10 @@ func _update_attachment(delta):
 		_detach_from_bullet()
 
 func _connect_bullet_signals(bullet: Node):
-	if bullet.has_signal("bullet_clicked"):
-		bullet.bullet_clicked.connect(_on_bullet_clicked)
+	if !bullet.has_signal("bullet_clicked"): return
+	if bullet.bullet_clicked.is_connected(_on_bullet_clicked): return
+
+	bullet.bullet_clicked.connect(_on_bullet_clicked)
 
 func _on_bullet_spawned(node: Node):
 	_connect_bullet_signals(node)
@@ -129,7 +131,10 @@ func _detach_from_bullet(remove_bullet := true):
 	_reset_player_state()
 
 	if bullet_to_remove:
-		bullet_to_remove.queue_free()
+		if bullet_to_remove.has_method("request_despawn"):
+			bullet_to_remove.request_despawn()
+		else:
+			bullet_to_remove.queue_free()
 
 func _revert_bullet_velocity():
 	if attached_bullet.has_method("revert_velocity"):

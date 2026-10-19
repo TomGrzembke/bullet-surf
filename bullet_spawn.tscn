@@ -11,3 +11,5 @@ bullet_scene = ExtResource("2_6emhd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=608612395]
 shape = SubResource("RectangleShape2D_hvtdq")
+
+[node name="BulletPool" type="Node" parent="."]

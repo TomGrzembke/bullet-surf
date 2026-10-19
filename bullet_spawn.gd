@@ -6,29 +6,37 @@ extends Node2D
 
 @export var bullet_holder : Node
 @export var bullet_spawn_point : Node
+@export var player_path: NodePath = NodePath("../Player")
 
 @export var bullet_scene : PackedScene
 @export var bullet_spawn_interval_base := 0.55
+@export var pool_distance_ratio := 2.0 / 3.0
+
+@onready var bullet_pool: Node = $BulletPool
 
 var current_spawntime := 0.
 var current_bullet_velocity := 200
+var player: Node2D
+var player_start_position: Vector2
 
 func _ready():
 	bullet_holder.child_entered_tree.connect(_on_bullet_added)
 	for bullet in bullet_holder.get_children():
 		_on_bullet_added(bullet)
+	player = get_node(player_path)
+	player_start_position = player.global_position
 
 func _on_bullet_added(node: Node):
-	if node.has_signal("bullet_spawn_request"):
+	if !node.has_signal("bullet_spawn_request"): return
+	if !node.bullet_spawn_request.is_connected(_spawn_wrapped_bullet):
 		node.bullet_spawn_request.connect(_spawn_wrapped_bullet)
+	if !node.has_signal("bullet_despawn_request"): return
+	if !node.bullet_despawn_request.is_connected(_return_bullet_to_pool):
+		node.bullet_despawn_request.connect(_return_bullet_to_pool)
 
 func _spawn_wrapped_bullet(position: Vector2, velocity: Vector2):
-	var new_bullet = bullet_scene.instantiate()
-	new_bullet.global_position = position
-	new_bullet.linear_velocity = velocity
-	new_bullet.can_spawn_wrapped = false
-	_set_bullet_velocity(new_bullet)
-	bullet_holder.add_child(new_bullet)
+	var bullet = _acquire_bullet()
+	bullet.activate(position, velocity, false)
 
 func _process(delta):
 	current_spawntime += delta
@@ -36,22 +44,50 @@ func _process(delta):
 		current_spawntime = 0
 		_spawn_new_bullet()
 
-func _spawn_new_bullet():
-	var new_bullet = bullet_scene.instantiate()
-	new_bullet.global_position = bullet_spawn_point.global_position
-	_add_random_x_offset(new_bullet)
-	_set_bullet_velocity(new_bullet)
-	bullet_holder.add_child(new_bullet)
+	_return_distant_bullets_to_pool()
 
-func _add_random_x_offset(bullet: RigidBody2D):
+func _spawn_new_bullet():
+	var bullet = _acquire_bullet()
+	var position = bullet_spawn_point.global_position
+	position.x += _get_random_x_offset()
+	bullet.activate(position, Vector2(0, current_bullet_velocity))
+
+func _get_random_x_offset() -> float:
 	var shape = $CollisionShape2D.shape
 	var extents_x = shape.size.x / 2.0
-	var random_x_offset = randf_range(-extents_x, extents_x)
-	bullet.global_position.x += random_x_offset
+	return randf_range(-extents_x, extents_x)
 
-func _set_bullet_velocity(bullet: RigidBody2D):
-	if bullet.has_method("set_bullet_velocity"):
-		bullet.set_bullet_velocity(current_bullet_velocity)
+func _acquire_bullet() -> RigidBody2D:
+	if bullet_pool.get_child_count() > 0:
+		var bullet = bullet_pool.get_child(0) as RigidBody2D
+		bullet.reparent(bullet_holder)
+		return bullet
+
+	var new_bullet = bullet_scene.instantiate() as RigidBody2D
+	bullet_holder.add_child(new_bullet)
+	_on_bullet_added(new_bullet)
+	return new_bullet
+
+func _return_bullet_to_pool(bullet: RigidBody2D):
+	if !is_instance_valid(bullet): return
+
+	bullet.deactivate()
+	bullet.reparent(bullet_pool)
+
+func _return_distant_bullets_to_pool():
+	if !player: return
+
+	var player_height = max(player_start_position.y - player.global_position.y, 0.0)
+	var pool_distance = player_height * pool_distance_ratio
+	if pool_distance <= 0: return
+
+	for node in bullet_holder.get_children():
+		var bullet = node as RigidBody2D
+		if !bullet: continue
+		if !bullet.has_method("request_despawn"): continue
+		var distance_under_player = bullet.global_position.y - player.global_position.y
+		if distance_under_player < pool_distance: continue
+		bullet.request_despawn()
 
 func set_spawn_interval(value: float):
 	bullet_spawn_interval_base = value
