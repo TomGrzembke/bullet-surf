@@ -1,28 +1,32 @@
 extends RigidBody2D
 
+# Handles bullet movement, click detection, and screen wrapping
+# Bullets move vertically, can be clicked by player to jump to them,
+# and wrap horizontally to spawn new bullets
+
 signal bullet_clicked(bullet: RigidBody2D)
 signal bullet_spawn_request(position: Vector2, velocity: Vector2)
 
 @export var bullet_velocity := 200
-
-@export var click_radius := 50  # Radius for click detection
-@export var wrap_buffer := 100  # Distance outside screen before wrapping (smaller = quicker wrap)
+@export var click_radius := 50
+@export var wrap_buffer := 100
 
 var click_area: Area2D
 var is_hovered := false
 var camera: Camera2D
-var can_spawn_wrapped := true  # Only original bullets can spawn wrapped bullets
-var has_spawned_wrapped := false  # Track if this bullet already spawned a wrapped one
-var has_been_clicked := false  # Track if this bullet has been clicked
-var click_time := 0.0  # Time when bullet was clicked
-var click_reset_time := 3.0  # Reset after 3 seconds
-var original_velocity := 0.0  # Store original velocity for reversion
+var can_spawn_wrapped := true
+var has_spawned_wrapped := false
+var has_been_clicked := false
+var click_time := 0.0
+var click_reset_time := 3.0
+var original_velocity := 0.0
 
 func _ready():
-	# Store original velocity
 	original_velocity = bullet_velocity
+	_setup_click_area()
+	camera = get_viewport().get_camera_2d()
 
-	# Create Area2D for click detection
+func _setup_click_area():
 	click_area = Area2D.new()
 	click_area.name = "ClickArea"
 	add_child(click_area)
@@ -32,16 +36,10 @@ func _ready():
 	collision.shape.radius = click_radius
 	click_area.add_child(collision)
 
-	# Make the area detect mouse/touch input
 	click_area.mouse_entered.connect(_on_mouse_entered)
 	click_area.mouse_exited.connect(_on_mouse_exited)
 	click_area.input_event.connect(_on_area_input_event)
-
-	# Enable input pickup for touch
 	click_area.input_pickable = true
-
-	# Find the camera
-	camera = get_viewport().get_camera_2d()
 
 func _process(delta):
 	linear_velocity.y = bullet_velocity
@@ -56,28 +54,29 @@ func _process(delta):
 
 func _check_screen_wrap():
 	if !camera: return
+	var screen_bounds = _get_screen_bounds()
 
+	if global_position.x > screen_bounds.right + wrap_buffer:
+		_spawn_wrapped_bullet_left(screen_bounds)
+	elif global_position.x < screen_bounds.left - wrap_buffer:
+		_spawn_wrapped_bullet_right(screen_bounds)
+
+func _get_screen_bounds() -> Dictionary:
 	var viewport_size = get_viewport_rect().size
-	var screen_bottom = camera.global_position.y + viewport_size.y / 2
-	var screen_top = camera.global_position.y - viewport_size.y / 2
-	var screen_left = camera.global_position.x - viewport_size.x / 2
-	var screen_right = camera.global_position.x + viewport_size.x / 2
+	return {
+		"left": camera.global_position.x - viewport_size.x / 2,
+		"right": camera.global_position.x + viewport_size.x / 2
+	}
 
-	# Wrap vertically (bottom to top)
-	#if global_position.y > screen_bottom + click_radius:
-	#	global_position.y = screen_top - click_radius
-	# Wrap vertically (top to bottom)
-	#elif global_position.y < screen_top - click_radius:
-	#	global_position.y = screen_bottom + click_radius
-
-	# Wrap horizontally (right to left) - spawn new bullet on left
-	if can_spawn_wrapped and !has_spawned_wrapped and global_position.x > screen_right + wrap_buffer:
-		var spawn_pos = Vector2(screen_left - wrap_buffer, global_position.y)
+func _spawn_wrapped_bullet_left(screen_bounds: Dictionary):
+	if can_spawn_wrapped and !has_spawned_wrapped:
+		var spawn_pos = Vector2(screen_bounds.left - wrap_buffer, global_position.y)
 		bullet_spawn_request.emit(spawn_pos, linear_velocity)
 		has_spawned_wrapped = true
-	# Wrap horizontally (left to right) - spawn new bullet on right
-	elif can_spawn_wrapped and !has_spawned_wrapped and global_position.x < screen_left - wrap_buffer:
-		var spawn_pos = Vector2(screen_right + wrap_buffer, global_position.y)
+
+func _spawn_wrapped_bullet_right(screen_bounds: Dictionary):
+	if can_spawn_wrapped and !has_spawned_wrapped:
+		var spawn_pos = Vector2(screen_bounds.right + wrap_buffer, global_position.y)
 		bullet_spawn_request.emit(spawn_pos, linear_velocity)
 		has_spawned_wrapped = true
 
@@ -95,7 +94,6 @@ func _on_area_input_event(_viewport, event, _shape_idx):
 
 func _on_mouse_entered():
 	is_hovered = true
-	# Highlight when hovered
 	modulate = Color(1.5, 1.5, 1.5, 1)
 
 func _on_mouse_exited():
@@ -103,19 +101,15 @@ func _on_mouse_exited():
 	modulate = Color(1, 1, 1, 1)
 
 func set_on_cooldown():
-	# Called when player successfully attaches to this bullet
 	has_been_clicked = true
 	click_time = 0.0
 
 func set_bullet_velocity(velocity: float):
-	# Called by difficulty manager to update bullet velocity
 	bullet_velocity = velocity
 	original_velocity = velocity
 
 func invert_velocity():
-	# Invert the bullet velocity when player mounts
 	bullet_velocity = -bullet_velocity
 
 func revert_velocity():
-	# Revert to original velocity when player detaches
 	bullet_velocity = original_velocity

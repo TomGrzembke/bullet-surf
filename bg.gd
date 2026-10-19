@@ -1,25 +1,25 @@
 extends Node2D
 
+# Creates an infinite scrolling background by repositioning sprites
+
 var camera: Camera2D
 var squares: Array[Sprite2D]
 var pattern_height: float
-@export var loop_buffer := 500  # Distance to wrap ahead of camera
+@export var loop_buffer := 500
 
 func _ready():
-	# Get all square children and sort by Y position
-	for child in get_children():
-		if child is Sprite2D:
-			squares.append(child)
-
-	# Sort squares by Y position (lowest Y first)
+	_collect_squares()
 	squares.sort_custom(func(a, b): return a.global_position.y < b.global_position.y)
-
-	# Find the camera
 	camera = get_viewport().get_camera_2d()
+	_calculate_pattern_height()
 
-	# Calculate pattern height based on spacing between squares
+func _collect_squares():
+	for child in get_children():
+		if child is not Sprite2D: continue
+		squares.append(child)
+
+func _calculate_pattern_height():
 	if squares.size() >= 2:
-		# Calculate average spacing between consecutive squares
 		var total_spacing = 0.0
 		for i in range(squares.size() - 1):
 			total_spacing += squares[i + 1].global_position.y - squares[i].global_position.y
@@ -35,13 +35,10 @@ func _process(delta):
 	var camera_y = camera.global_position.y
 	var viewport_height = get_viewport_rect().size.y
 
-	# Loop each square
 	for square in squares:
 		var square_y = square.global_position.y
 
-		# If square is above camera (with buffer), move it below
 		if square_y < camera_y - viewport_height / 2 - loop_buffer:
 			square.global_position.y += pattern_height
-		# If square is below camera (with buffer), move it above
 		elif square_y > camera_y + viewport_height / 2 + loop_buffer:
 			square.global_position.y -= pattern_height

@@ -1,18 +1,19 @@
 extends RigidBody2D
 
-@export var jump_speed := 400  #pixels per second
+# Handles player movement, jumping to bullets, and attachment logic
+# Player jumps to bullets by clicking/tapping them, attaches temporarily,
+# and the bullet breaks after a duration controlled by difficulty manager
+
+@export var jump_speed := 400
 @export var bullet_holder : Node
-@export var attach_distance := 50  # Distance at which to attach to bullet
-@export var bullet_break_time_base := 0.9  # Base seconds before bullet breaks when attached
-@export var bullet_break_time_min := 0.3  # Minimum break time
+@export var attach_distance := 50
+@export var bullet_break_time_base := 0.9
+@export var bullet_break_time_min := 0.3
 
 func set_jump_speed(value: float):
-	print("Setting jump_speed to: ", value)
 	jump_speed = value
-	print("Jump_speed is now: ", jump_speed)
 
 func set_bullet_break_time_base(value: float):
-	print("Setting bullet_break_time_base to: ", value)
 	bullet_break_time_base = value
 
 var is_jumping := false
@@ -47,15 +48,10 @@ func _on_bullet_spawned(node: Node):
 	_connect_bullet_signals(node)
 
 func _on_bullet_clicked(bullet: RigidBody2D):
-	# If attached, detach first (but don't remove the old bullet)
 	if is_attached:
 		_detach_from_bullet(false)
 
-	if is_jumping:
-		# Start new jump from current position to new bullet
-		jump_to_bullet(bullet)
-	else:
-		jump_to_bullet(bullet)
+	jump_to_bullet(bullet)
 
 func jump_to_bullet(bullet: RigidBody2D):
 	is_jumping = true
@@ -110,54 +106,54 @@ func _attach_to_bullet(bullet: RigidBody2D):
 	is_attached = true
 	attached_bullet = bullet
 	original_parent = get_parent()
-	attach_time = 0.0  # Reset break timer
+	attach_time = 0.0
 
-	# Mark bullet as used when player successfully attaches
+	_mark_bullet_used(bullet)
+	_invert_bullet_velocity(bullet)
+	_reparent_to_bullet(bullet)
+	freeze = true
+
+func _mark_bullet_used(bullet: RigidBody2D):
 	if bullet.has_method("set_on_cooldown"):
 		bullet.set_on_cooldown()
 
-	# Invert bullet velocity when player mounts
+func _invert_bullet_velocity(bullet: RigidBody2D):
 	if bullet.has_method("invert_velocity"):
 		bullet.invert_velocity()
 
-	# Store the global position before reparenting
+func _reparent_to_bullet(bullet: RigidBody2D):
 	var current_global_pos = global_position
-
-	# Reparent player to bullet
 	reparent(bullet)
-
-	# Restore the global position after reparenting
 	global_position = current_global_pos
-
-	# Calculate offset for detachment later
 	attach_offset = global_position - bullet.global_position
-
-	freeze = true  # Disable physics while attached
 
 func _detach_from_bullet(remove_bullet := true):
 	if !is_attached or !attached_bullet:
 		return
 
-	# Store reference to bullet before detaching
 	var bullet_to_remove = attached_bullet if remove_bullet else null
 
-	# Revert bullet velocity when player detaches
+	_revert_bullet_velocity()
+	_reparent_to_original()
+	_reset_player_state()
+
+	if bullet_to_remove:
+		bullet_to_remove.queue_free()
+
+func _revert_bullet_velocity():
 	if attached_bullet.has_method("revert_velocity"):
 		attached_bullet.revert_velocity()
 
-	# Reparent back to original parent
+func _reparent_to_original():
 	reparent(original_parent)
 	global_position = attached_bullet.global_position + attach_offset
 
+func _reset_player_state():
 	is_attached = false
 	attached_bullet = null
 	original_parent = null
-	freeze = false  # Re-enable physics
+	freeze = false
 	linear_velocity = Vector2.ZERO
-
-	# Remove the bullet if requested
-	if bullet_to_remove:
-		bullet_to_remove.queue_free()
 
 func _get_current_break_time() -> float:
 	return bullet_break_time_base
