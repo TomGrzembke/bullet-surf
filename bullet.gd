@@ -7,9 +7,10 @@ extends RigidBody2D
 signal bullet_clicked(bullet: RigidBody2D)
 signal bullet_spawn_request(position: Vector2, velocity: Vector2)
 
-@export var bullet_velocity := 200
 @export var click_radius := 50
 @export var wrap_buffer := 100
+
+@export var bullet_velocity := 200
 
 var click_area: Area2D
 var is_hovered := false
@@ -44,24 +45,25 @@ func _setup_click_area():
 func _process(delta):
 	linear_velocity.y = bullet_velocity
 	_check_screen_wrap()
+	_reset_click_cooldown(delta)
 
-	# Reset click state after 3 seconds
-	if has_been_clicked:
-		click_time += delta
-		if click_time >= click_reset_time:
-			has_been_clicked = false
-			click_time = 0.0
+func _reset_click_cooldown(delta):
+	if !has_been_clicked: return
+	click_time += delta
+	if click_time >= click_reset_time:
+		has_been_clicked = false
+		click_time = 0.0
 
 func _check_screen_wrap():
 	if !camera: return
-	var screen_bounds = _get_screen_bounds()
+	var screen_bounds = _calculate_screen_bounds()
 
 	if global_position.x > screen_bounds.right + wrap_buffer:
 		_spawn_wrapped_bullet_left(screen_bounds)
 	elif global_position.x < screen_bounds.left - wrap_buffer:
 		_spawn_wrapped_bullet_right(screen_bounds)
 
-func _get_screen_bounds() -> Dictionary:
+func _calculate_screen_bounds() -> Dictionary:
 	var viewport_size = get_viewport_rect().size
 	return {
 		"left": camera.global_position.x - viewport_size.x / 2,
@@ -69,28 +71,35 @@ func _get_screen_bounds() -> Dictionary:
 	}
 
 func _spawn_wrapped_bullet_left(screen_bounds: Dictionary):
-	if can_spawn_wrapped and !has_spawned_wrapped:
-		var spawn_pos = Vector2(screen_bounds.left - wrap_buffer, global_position.y)
-		bullet_spawn_request.emit(spawn_pos, linear_velocity)
-		has_spawned_wrapped = true
+	if !can_spawn_wrapped: return
+	if has_spawned_wrapped: return
+
+	var spawn_pos = Vector2(screen_bounds.left - wrap_buffer, global_position.y)
+	bullet_spawn_request.emit(spawn_pos, linear_velocity)
+	has_spawned_wrapped = true
 
 func _spawn_wrapped_bullet_right(screen_bounds: Dictionary):
-	if can_spawn_wrapped and !has_spawned_wrapped:
-		var spawn_pos = Vector2(screen_bounds.right + wrap_buffer, global_position.y)
-		bullet_spawn_request.emit(spawn_pos, linear_velocity)
-		has_spawned_wrapped = true
+	if !can_spawn_wrapped: return
+	if has_spawned_wrapped: return
+
+	var spawn_pos = Vector2(screen_bounds.right + wrap_buffer, global_position.y)
+	bullet_spawn_request.emit(spawn_pos, linear_velocity)
+	has_spawned_wrapped = true
 
 func _input(event):
-	# Only process input if mouse is over THIS bullet and hasn't been used yet
-	if is_hovered and !has_been_clicked and event is InputEventMouseButton and event.pressed:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			bullet_clicked.emit(self)
+	if !is_hovered: return
+	if has_been_clicked: return
+	if !(event is InputEventMouseButton and event.pressed): return
+
+	if event.button_index == MOUSE_BUTTON_LEFT:
+		bullet_clicked.emit(self)
 
 func _on_area_input_event(_viewport, event, _shape_idx):
-	# Handle touch and mouse input directly on the area
-	if !has_been_clicked and event is InputEventMouseButton and event.pressed:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			bullet_clicked.emit(self)
+	if has_been_clicked: return
+	if !(event is InputEventMouseButton and event.pressed): return
+
+	if event.button_index == MOUSE_BUTTON_LEFT:
+		bullet_clicked.emit(self)
 
 func _on_mouse_entered():
 	is_hovered = true

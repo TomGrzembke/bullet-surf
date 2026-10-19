@@ -4,17 +4,12 @@ extends RigidBody2D
 # Player jumps to bullets by clicking/tapping them, attaches temporarily,
 # and the bullet breaks after a duration controlled by difficulty manager
 
-@export var jump_speed := 400
 @export var bullet_holder : Node
+
+@export var jump_speed := 400
 @export var attach_distance := 50
 @export var bullet_break_time_base := 0.9
 @export var bullet_break_time_min := 0.3
-
-func set_jump_speed(value: float):
-	jump_speed = value
-
-func set_bullet_break_time_base(value: float):
-	bullet_break_time_base = value
 
 var is_jumping := false
 var is_attached := false
@@ -30,8 +25,6 @@ var current_break_time: float
 
 func _ready():
 	if !bullet_holder:
-		#print("ERROR: bullet_holder not set!")
-		# Try to find bullet holder automatically
 		var root = get_parent()
 		bullet_holder = root.get_node("BulletHolder")
 
@@ -39,6 +32,30 @@ func _ready():
 		_connect_bullet_signals(bullet)
 
 	bullet_holder.child_entered_tree.connect(_on_bullet_spawned)
+
+func _process(delta):
+	if is_jumping and target_bullet:
+		jump_elapsed += delta
+
+		var progress = min(jump_elapsed / jump_duration, 1.0)
+		var target_pos = target_bullet.global_position
+		global_position = jump_start_position.lerp(target_pos, progress)
+
+		var distance = global_position.distance_to(target_bullet.global_position)
+		if distance <= attach_distance:
+			_attach_to_bullet(target_bullet)
+			is_jumping = false
+			target_bullet = null
+			return
+
+		if progress >= 1.0:
+			_on_jump_complete()
+
+	if is_attached:
+		attach_time += delta
+		current_break_time = _get_current_break_time()
+		if attach_time >= current_break_time:
+			_detach_from_bullet()
 
 func _connect_bullet_signals(bullet: Node):
 	if bullet.has_signal("bullet_clicked"):
@@ -58,43 +75,10 @@ func jump_to_bullet(bullet: RigidBody2D):
 	target_bullet = bullet
 	jump_start_position = global_position
 
-	# Calculate distance and duration for constant speed
 	var distance = global_position.distance_to(bullet.global_position)
 	jump_duration = distance / jump_speed
 	jump_elapsed = 0.0
-
-	# Disable physics during jump
 	freeze = true
-
-func _process(delta):
-	if is_jumping and target_bullet:
-		jump_elapsed += delta
-
-		# Calculate progress (0.0 to 1.0)
-		var progress = min(jump_elapsed / jump_duration, 1.0)
-
-		# Interpolate position
-		var target_pos = target_bullet.global_position
-		global_position = jump_start_position.lerp(target_pos, progress)
-
-		# Check if close enough to attach
-		var distance = global_position.distance_to(target_bullet.global_position)
-		if distance <= attach_distance:
-			_attach_to_bullet(target_bullet)
-			is_jumping = false
-			target_bullet = null
-			return
-
-		# Check if jump complete
-		if progress >= 1.0:
-			_on_jump_complete()
-
-	# Check if attached bullet should break
-	if is_attached:
-		attach_time += delta
-		current_break_time = _get_current_break_time()
-		if attach_time >= current_break_time:
-			_detach_from_bullet()
 
 func _on_jump_complete():
 	is_jumping = false
@@ -128,8 +112,8 @@ func _reparent_to_bullet(bullet: RigidBody2D):
 	attach_offset = global_position - bullet.global_position
 
 func _detach_from_bullet(remove_bullet := true):
-	if !is_attached or !attached_bullet:
-		return
+	if !is_attached: return
+	if !attached_bullet: return
 
 	var bullet_to_remove = attached_bullet if remove_bullet else null
 
@@ -157,3 +141,9 @@ func _reset_player_state():
 
 func _get_current_break_time() -> float:
 	return bullet_break_time_base
+
+func set_jump_speed(value: float):
+	jump_speed = value
+
+func set_bullet_break_time_base(value: float):
+	bullet_break_time_base = value

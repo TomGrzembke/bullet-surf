@@ -45,13 +45,11 @@ func _initialize_node_references():
 	bullet_spawn = root.get_node("BulletSpawn")
 
 func _process(delta):
-	if !player:
-		return
+	if !player: return
 
-	var distance_m = abs(player.global_position.y) / 100  # 100px = 1m
-	var checkpoint = int(distance_m / 100)  # New checkpoint every 100m
+	var distance_m = abs(player.global_position.y) / 100
+	var checkpoint = int(distance_m / 100)
 
-	# Check if we've reached a new checkpoint
 	if checkpoint > current_checkpoint:
 		current_checkpoint = checkpoint
 		_update_difficulty(checkpoint)
@@ -68,8 +66,7 @@ func _calculate_bullet_velocity(checkpoint: int) -> float:
 	return min(velocity, bullet_velocity_max)
 
 func _update_player_difficulty(checkpoint: int):
-	if !player:
-		return
+	if !player: return
 
 	var new_jump_speed = jump_speed_base + (checkpoint * jump_speed_increase_per_100m)
 	new_jump_speed = min(new_jump_speed, jump_speed_max)

@@ -6,13 +6,15 @@ extends CanvasLayer
 
 @onready var height_label = $HeightLabel
 
-@export var pixels_per_meter := 100
 @export var player_path: NodePath = NodePath("../Player")
-@export var milestone_mark := 100
-@export var checkmark_scene: PackedScene
 @export var world_parent_path: NodePath = NodePath("..")
+
+@export var pixels_per_meter := 100
+@export var milestone_mark := 100
 @export var spawn_distance := 500
 @export var cleanup_distance := 1000
+
+@export var checkmark_scene: PackedScene
 
 var player: Node2D
 var camera: Camera2D
@@ -36,8 +38,8 @@ func _process(delta):
 		_manage_milestone_checkmarks()
 
 func _manage_milestone_checkmarks():
-	if !checkmark_scene or !world_parent:
-		return
+	if !checkmark_scene: return
+	if !world_parent: return
 
 	if !has_started:
 		if abs(player.global_position.y - initial_height) <= 50:

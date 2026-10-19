@@ -29,8 +29,8 @@ func _calculate_pattern_height():
 		pattern_height = square_height
 
 func _process(delta):
-	if !camera or squares.size() == 0:
-		return
+	if !camera: return
+	if squares.size() == 0: return
 
 	var camera_y = camera.global_position.y
 	var viewport_height = get_viewport_rect().size.y
