@@ -14,6 +14,7 @@ extends CanvasLayer
 @export var checkmark_scene: PackedScene
 
 @onready var height_label = $HeightLabel
+@onready var speed_label = $SpeedLabel
 
 var player: Node2D
 var camera: Camera2D
@@ -29,12 +30,24 @@ func _ready():
 	world_parent = get_node(world_parent_path)
 	initial_height = player.global_position.y
 	height_label.text = "Height: 0m"
+	_update_speed_label()
 
 func _process(_delta):
 	if player and height_label:
 		var height_meters = abs(player.global_position.y) / pixels_per_meter
 		height_label.text = "Height: %1.fm" % height_meters
+		_update_speed_label()
 		_manage_milestone_checkmarks()
+
+func _update_speed_label():
+	if !player: return
+	if !speed_label: return
+
+	var jump_speed = player.get("jump_speed")
+	if jump_speed == null: return
+
+	var speed_kmh = float(jump_speed) / pixels_per_meter * 3.6
+	speed_label.text = "%.1f km/h" % speed_kmh
 
 func _manage_milestone_checkmarks():
 	if !checkmark_scene: return
