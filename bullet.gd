@@ -7,12 +7,12 @@ extends RigidBody2D
 signal bullet_clicked(bullet: RigidBody2D)
 signal bullet_spawn_request(position: Vector2, velocity: Vector2)
 
-@export var click_radius := 50
 @export var wrap_buffer := 100
 
 @export var bullet_velocity := 200
 
-var click_area: Area2D
+@onready var click_area: Area2D = $ClickArea
+
 var is_hovered := false
 var camera: Camera2D
 var can_spawn_wrapped := true
@@ -24,23 +24,13 @@ var original_velocity := 0.0
 
 func _ready():
 	original_velocity = bullet_velocity
-	_setup_click_area()
+	_connect_click_area()
 	camera = get_viewport().get_camera_2d()
 
-func _setup_click_area():
-	click_area = Area2D.new()
-	click_area.name = "ClickArea"
-	add_child(click_area)
-
-	var collision = CollisionShape2D.new()
-	collision.shape = CircleShape2D.new()
-	collision.shape.radius = click_radius
-	click_area.add_child(collision)
-
+func _connect_click_area():
 	click_area.mouse_entered.connect(_on_mouse_entered)
 	click_area.mouse_exited.connect(_on_mouse_exited)
 	click_area.input_event.connect(_on_area_input_event)
-	click_area.input_pickable = true
 
 func _physics_process(delta):
 	linear_velocity.y = bullet_velocity
