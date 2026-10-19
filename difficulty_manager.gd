@@ -1,6 +1,6 @@
 # Manages game difficulty scaling based on player height/distance
 # Updates player jump speed, bullet velocity, spawn interval, and break time
-# every 100m checkpoint to progressively increase difficulty
+# every configured checkpoint to progressively increase difficulty
 
 extends Node
 
@@ -13,8 +13,9 @@ signal difficulty_updated(checkpoint: int, distance_m: float)
 @export var checkpoint_distance_m := 25
 
 @export var jump_speed_base := 300
-@export var jump_speed_increase_per_100m := 20
 @export var jump_speed_max := 800
+@export var jump_speed_upgrade_curve: Curve
+@export_range(1, 100) var jump_speed_curve_checkpoint_count := 20
 
 @export var bullet_break_time_base := 1.3
 @export var bullet_break_time_min := 0.3
@@ -51,10 +52,10 @@ func _process(_delta):
 	var distance_m = abs(player.global_position.y) / 100
 	var checkpoint = int(distance_m / checkpoint_distance_m)
 
-	if checkpoint > current_checkpoint:
-		current_checkpoint = checkpoint
-		_update_difficulty(checkpoint)
-		difficulty_updated.emit(checkpoint, distance_m)
+	while checkpoint > current_checkpoint:
+		current_checkpoint += 1
+		_update_difficulty(current_checkpoint)
+		difficulty_updated.emit(current_checkpoint, distance_m)
 
 func _update_difficulty(checkpoint: int):
 	var new_velocity = _calculate_bullet_velocity(checkpoint)
@@ -69,8 +70,7 @@ func _calculate_bullet_velocity(checkpoint: int) -> float:
 func _update_player_difficulty(checkpoint: int):
 	if !player: return
 
-	var new_jump_speed = jump_speed_base + (_get_progression_multiplier(checkpoint) * jump_speed_increase_per_100m)
-	new_jump_speed = min(new_jump_speed, jump_speed_max)
+	var new_jump_speed = _get_upgraded_jump_speed(checkpoint)
 	if player.has_method("set_jump_speed"):
 		player.set_jump_speed(new_jump_speed)
 
@@ -100,3 +100,8 @@ func _update_spawn_difficulty(checkpoint: int, velocity: float):
 
 func _get_progression_multiplier(checkpoint: int) -> float:
 	return checkpoint * checkpoint_distance_m / 100.0
+
+func _get_upgraded_jump_speed(checkpoint: int) -> float:
+	var curve_progress = min(float(checkpoint) / jump_speed_curve_checkpoint_count, 1.0)
+	var curve_multiplier = jump_speed_upgrade_curve.sample_baked(curve_progress) if jump_speed_upgrade_curve else 1.0
+	return lerpf(jump_speed_base, jump_speed_max, clampf(curve_multiplier, 0.0, 1.0))

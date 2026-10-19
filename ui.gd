@@ -46,7 +46,7 @@ func _update_speed_label():
 	var jump_speed = player.get("jump_speed")
 	if jump_speed == null: return
 
-	var speed_kmh = float(jump_speed) / pixels_per_meter * 3.6
+	var speed_kmh = float(jump_speed) / pixels_per_meter
 	speed_label.text = "%.1f km/h" % speed_kmh
 
 func _manage_milestone_checkmarks():
@@ -54,8 +54,7 @@ func _manage_milestone_checkmarks():
 	if !world_parent: return
 
 	if !has_started:
-		if abs(player.global_position.y - initial_height) <= 50:
-			return
+		if abs(player.global_position.y - initial_height) <= 50: return
 		has_started = true
 
 	var player_y = player.global_position.y
@@ -70,9 +69,10 @@ func _spawn_ahead_milestones(current_milestone: int, camera_x: float):
 	for i in range(current_milestone + 1, current_milestone + 5):
 		if !spawned_milestones.has(i):
 			var checkmark = _spawn_checkmark_for_milestone(i, camera_x)
-			if checkmark:
-				spawned_milestones[i] = true
-				milestone_checkmarks[i] = checkmark
+			if !checkmark: continue
+
+			spawned_milestones[i] = true
+			milestone_checkmarks[i] = checkmark
 
 func _sync_checkmarks_to_camera(camera_x: float):
 	for milestone in milestone_checkmarks.keys():
