@@ -6,7 +6,7 @@ extends Node2D
 @export var player_path: NodePath = NodePath("../Player")
 @export var world_parent_path: NodePath = NodePath("..")
 
-@export var pixels_per_meter := 100
+@export var settings: UnitSettings
 @export var milestone_mark := 100
 @export var spawn_distance := 500
 @export var cleanup_distance := 1000
@@ -45,6 +45,7 @@ func _manage_milestone_checkmarks():
 	if camera:
 		camera_x = camera.global_position.x
 
+	var pixels_per_meter = settings.pixels_per_meter if settings else 100
 	var current_milestone = int(floor(abs(player_y) / (milestone_mark * pixels_per_meter)))
 
 	_spawn_ahead_milestones(current_milestone, camera_x)
@@ -83,6 +84,7 @@ func _cleanup_old_milestones(player_y: float):
 func _spawn_checkmark_for_milestone(milestone_num: int, camera_x: float):
 	var checkmark = checkmark_scene.instantiate()
 	var meters = milestone_num * milestone_mark
+	var pixels_per_meter = settings.pixels_per_meter if settings else 100
 	var y_position = -meters * pixels_per_meter
 	checkmark.global_position = Vector2(camera_x, y_position)
 	world_parent.add_child(checkmark)

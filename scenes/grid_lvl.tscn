@@ -1,3 +1,34 @@
 [gd_scene format=3 uid="uid://0a70kjdkhh67"]
 
+[ext_resource type="PackedScene" uid="uid://dv7brhxwler72" path="res://player.tscn" id="1_j6bxh"]
+[ext_resource type="Texture2D" uid="uid://b8va46gjrdgon" path="res://Square.png" id="2_yelto"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_flrdo"]
+size = Vector2(255.77995, 247.80257)
+
 [node name="GridLvl" type="Node2D" unique_id=142700249]
+
+[node name="Player" parent="." unique_id=1232459265 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("1_j6bxh")]
+bullet_holder = NodePath("BulletSpawnPoint")
+auto_attach_range = 150.0
+auto_attach_frame_skip = 4
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=254314232]
+position = Vector2(0, -350)
+
+[node name="BulletSpawnPoint" type="Node2D" parent="Player" unique_id=1258815077]
+position = Vector2(0, -965)
+
+[node name="Ground" type="Sprite2D" parent="." unique_id=68252058]
+modulate = Color(0.5432565, 0.5182228, 0.56698006, 1)
+z_index = -5
+position = Vector2(5, 150.3687)
+scale = Vector2(28.379866, 0.5283695)
+texture = ExtResource("2_yelto")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Ground" unique_id=1652092844 groups=["floor"]]
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground/StaticBody2D" unique_id=1620062934]
+position = Vector2(0.47568935, 0.88500977)
+shape = SubResource("RectangleShape2D_flrdo")

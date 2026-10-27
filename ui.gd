@@ -5,7 +5,7 @@ extends CanvasLayer
 
 @export var player_path: NodePath = NodePath("../Player")
 
-@export var pixels_per_meter := 100
+@export var settings: UnitSettings
 
 @onready var height_label = $HeightLabel
 @onready var speed_label = $SpeedLabel
@@ -19,6 +19,7 @@ func _ready():
 
 func _process(_delta):
 	if player and height_label:
+		var pixels_per_meter = settings.pixels_per_meter if settings else 100
 		var height_meters = abs(player.global_position.y) / pixels_per_meter
 		height_label.text = "Height: %1.fm" % height_meters
 		_update_speed_label()
@@ -30,5 +31,6 @@ func _update_speed_label():
 	var jump_speed = player.get("jump_speed")
 	if jump_speed == null: return
 
+	var pixels_per_meter = settings.pixels_per_meter if settings else 100
 	var speed_kmh = float(jump_speed) / pixels_per_meter
 	speed_label.text = "%.1f km/h" % speed_kmh

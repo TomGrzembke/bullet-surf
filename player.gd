@@ -11,6 +11,7 @@ extends RigidBody2D
 @export var bullet_break_time_base: float = 0.9
 @export var auto_attach_range: float = 300
 @export var auto_attach_enabled: bool = true
+@export var auto_attach_frame_skip: int = 3
 
 var is_jumping := false
 var is_attached := false
@@ -23,6 +24,7 @@ var attach_offset: Vector2
 var attach_time: float
 var current_break_time: float
 var is_mouse_held := false
+var frame_counter: int = 0
 
 func _ready():
 	if !bullet_holder:
@@ -52,6 +54,9 @@ func _physics_process(delta):
 func _update_auto_attach():
 	if !auto_attach_enabled: return
 	if !is_mouse_held: return
+
+	frame_counter += 1
+	if frame_counter % auto_attach_frame_skip != 0: return
 
 	var nearest_bullet = _find_nearest_bullet_to_cursor()
 	if nearest_bullet:
