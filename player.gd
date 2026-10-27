@@ -9,6 +9,8 @@ extends RigidBody2D
 @export var jump_speed: float = 400
 @export var attach_distance: float = 50
 @export var bullet_break_time_base: float = 0.9
+@export var auto_attach_range: float = 300
+@export var auto_attach_enabled: bool = true
 
 var is_jumping := false
 var is_attached := false
@@ -20,6 +22,7 @@ var jump_elapsed: float
 var attach_offset: Vector2
 var attach_time: float
 var current_break_time: float
+var is_mouse_held := false
 
 func _ready():
 	if !bullet_holder:
@@ -31,9 +34,54 @@ func _ready():
 
 	bullet_holder.child_entered_tree.connect(_on_bullet_spawned)
 
+func _input(event):
+	if !auto_attach_enabled: return
+
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			is_mouse_held = event.pressed
+
+	if event is InputEventScreenTouch:
+		is_mouse_held = event.pressed
+
 func _physics_process(delta):
 	_update_jump(delta)
 	_update_attachment(delta)
+	_update_auto_attach()
+
+func _update_auto_attach():
+	if !auto_attach_enabled: return
+	if !is_mouse_held: return
+
+	var nearest_bullet = _find_nearest_bullet_to_cursor()
+	if nearest_bullet:
+		jump_to_bullet(nearest_bullet)
+
+func _find_nearest_bullet_to_cursor() -> RigidBody2D:
+	var touch_pos = get_global_mouse_position()
+	var viewport = get_viewport()
+	if viewport.has_method("get_touches"):
+		var touches = viewport.get_touches()
+		if touches.size() > 0:
+			touch_pos = touches[0].position
+
+	var nearest: RigidBody2D = null
+	var nearest_distance = auto_attach_range
+
+	for node in bullet_holder.get_children():
+		var bullet = node as RigidBody2D
+		if !bullet: continue
+		if !bullet.has_method("get"): continue
+		if bullet.get("is_marked_for_pooling") && bullet.is_marked_for_pooling: continue
+		if is_attached && bullet == attached_bullet: continue
+		if bullet.get("is_in_use_by_player") && bullet.is_in_use_by_player: continue
+
+		var distance = touch_pos.distance_to(bullet.global_position)
+		if distance < nearest_distance:
+			nearest_distance = distance
+			nearest = bullet
+
+	return nearest
 
 func _update_jump(delta):
 	if !is_jumping: return
@@ -119,6 +167,9 @@ func jump_to_bullet(bullet: RigidBody2D):
 	if bullet.has_method("get") && bullet.get("is_marked_for_pooling"):
 		if bullet.is_marked_for_pooling:
 			return
+
+	if is_attached:
+		_detach_from_bullet(false)
 
 	is_jumping = true
 	target_bullet = bullet

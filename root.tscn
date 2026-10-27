@@ -42,9 +42,7 @@ checkmark_scene = ExtResource("6_ns2nk")
 
 [node name="Player" parent="." unique_id=1232459265 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("1_pq8q7")]
 bullet_holder = NodePath("../BulletHolder")
-jump_speed = null
-attach_distance = null
-bullet_break_time_base = null
+auto_attach_range = 150.0
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=169432101]
 position = Vector2(0, -350)
@@ -94,7 +92,7 @@ offset_right = -10.0
 offset_bottom = 40.0
 grow_horizontal = 0
 text = "Height: 0m"
-horizontal_alignment = 1
+horizontal_alignment = 2
 
 [node name="SpeedLabel" type="Label" parent="UI" unique_id=64597580]
 anchors_preset = 10
@@ -105,7 +103,7 @@ offset_right = -10.0
 offset_bottom = 70.0
 grow_horizontal = 0
 text = "0.0 km/h"
-horizontal_alignment = 1
+horizontal_alignment = 2
 
 [node name="PokiBase" type="Node" parent="." unique_id=1173744218]
 script = ExtResource("8_bf3um")
