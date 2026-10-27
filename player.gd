@@ -78,9 +78,6 @@ func _connect_bullet_signals(bullet: Node):
 	bullet.bullet_clicked.connect(_on_bullet_clicked)
 
 	if !bullet.has_signal("bullet_hit_ground"): return
-	if bullet.bullet_hit_ground.is_connected(_on_bullet_hit_ground): return
-
-	bullet.bullet_hit_ground.connect(_on_bullet_hit_ground)
 
 	if !bullet.has_signal("bullet_despawning"): return
 	if bullet.bullet_despawning.is_connected(_on_bullet_despawning): return
@@ -105,9 +102,6 @@ func _on_bullet_clicked(bullet: RigidBody2D):
 		_detach_from_bullet(false)
 
 	jump_to_bullet(bullet)
-
-func _on_bullet_hit_ground(bullet: RigidBody2D):
-	pass
 
 func _on_bullet_despawning(bullet: RigidBody2D):
 	if is_attached and attached_bullet == bullet:

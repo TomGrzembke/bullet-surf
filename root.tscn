@@ -42,6 +42,9 @@ checkmark_scene = ExtResource("6_ns2nk")
 
 [node name="Player" parent="." unique_id=1232459265 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("1_pq8q7")]
 bullet_holder = NodePath("../BulletHolder")
+jump_speed = null
+attach_distance = null
+bullet_break_time_base = null
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=169432101]
 position = Vector2(0, -350)
