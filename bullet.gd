@@ -5,12 +5,12 @@
 extends RigidBody2D
 
 signal bullet_clicked(bullet: RigidBody2D)
-signal bullet_spawn_request(position: Vector2, velocity: Vector2)
+signal bullet_spawn_request(spawn_position: Vector2, velocity: Vector2)
 signal bullet_despawn_request(bullet: RigidBody2D)
 
-@export var wrap_buffer := 100
+@export var wrap_buffer: float = 100
 
-@export var bullet_velocity := 200
+@export var bullet_velocity: float = 200
 
 @onready var click_area: Area2D = $ClickArea
 @onready var click_collision: CollisionShape2D = $ClickArea/CollisionShape2D
@@ -20,9 +20,9 @@ var camera: Camera2D
 var can_spawn_wrapped := true
 var has_spawned_wrapped := false
 var has_been_clicked := false
-var click_time := 0.0
-var click_reset_time := 3.0
-var original_velocity := 0.0
+var click_time: float = 0.0
+var click_reset_time: float = 3.0
+var original_velocity: float = 0.0
 var is_click_area_enabled := true
 
 func _ready():
@@ -83,7 +83,7 @@ func _set_click_area_enabled(is_enabled: bool):
 	if is_click_area_enabled == is_enabled: return
 
 	is_click_area_enabled = is_enabled
-	click_area.input_pickable = is_enabled
+	click_area.set_deferred("input_pickable", is_enabled)
 	click_collision.set_deferred("disabled", !is_enabled)
 
 func _calculate_screen_bounds() -> Dictionary:
@@ -152,8 +152,8 @@ func invert_velocity():
 func revert_velocity():
 	bullet_velocity = original_velocity
 
-func activate(position: Vector2, velocity: Vector2, can_wrap := true):
-	global_position = position
+func activate(spawn_position: Vector2, velocity: Vector2, can_wrap := true):
+	global_position = spawn_position
 	linear_velocity = velocity
 	bullet_velocity = velocity.y
 	original_velocity = velocity.y

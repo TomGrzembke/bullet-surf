@@ -29,7 +29,7 @@ func _calculate_pattern_height():
 		var square_height = squares[0].get_rect().size.y * squares[0].scale.y
 		pattern_height = square_height
 
-func _process(delta):
+func _process(_delta):
 	if !camera: return
 	if squares.size() == 0: return
 

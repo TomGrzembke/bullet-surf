@@ -51,7 +51,8 @@ func measure(category: String, what: String, action: String):
 
 
 func get_url_param(key: String) -> Variant:
-	return _sdk.getURLParam(key) if is_available() else null
+	if !is_available(): return null
+	return _sdk.getURLParam(key)
 
 
 func is_ad_blocked() -> bool:
@@ -69,7 +70,11 @@ func commercial_break(on_start: Callable = Callable()):
 
 	var resolve = _javascript_callback(func(_args: Array): commercial_break_done.emit(null))
 
-	var reject = _javascript_callback(func(args: Array): commercial_break_failed.emit(args[0] if not args.is_empty() else "Unknown Poki error"))
+	var reject = _javascript_callback(func(args: Array):
+		var error_msg = "Unknown Poki error"
+		if not args.is_empty():
+			error_msg = args[0]
+		commercial_break_failed.emit(error_msg))
 
 	var promise = get_comercial_break_promise(on_start)
 
@@ -93,10 +98,16 @@ func rewarded_break(on_start_or_params = null):
 	gameplay_stop()
 
 	var resolve = _javascript_callback(func(args: Array):
-		rewarded_break_done.emit(bool(args[0]) if not args.is_empty() else false))
+		var reward_granted = false
+		if not args.is_empty():
+			reward_granted = bool(args[0])
+		rewarded_break_done.emit(reward_granted))
 
 	var reject = _javascript_callback(func(args: Array):
-		rewarded_break_failed.emit(args[0] if not args.is_empty() else "Unknown Poki error whilst rewarded break"))
+		var error_msg = "Unknown Poki error whilst rewarded break"
+		if not args.is_empty():
+			error_msg = args[0]
+		rewarded_break_failed.emit(error_msg))
 
 	var promise = get_rewarded_break_promise(on_start_or_params)
 

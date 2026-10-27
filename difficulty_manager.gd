@@ -50,7 +50,7 @@ func _process(_delta):
 	if !player: return
 
 	var distance_m = abs(player.global_position.y) / 100
-	var checkpoint = int(distance_m / checkpoint_distance_m)
+	var checkpoint = int(floor(distance_m / checkpoint_distance_m))
 
 	while checkpoint > current_checkpoint:
 		current_checkpoint += 1
@@ -103,5 +103,7 @@ func _get_progression_multiplier(checkpoint: int) -> float:
 
 func _get_upgraded_jump_speed(checkpoint: int) -> float:
 	var curve_progress = min(float(checkpoint) / jump_speed_curve_checkpoint_count, 1.0)
-	var curve_multiplier = jump_speed_upgrade_curve.sample_baked(curve_progress) if jump_speed_upgrade_curve else 1.0
+	var curve_multiplier = 1.0
+	if jump_speed_upgrade_curve:
+		curve_multiplier = jump_speed_upgrade_curve.sample_baked(curve_progress)
 	return lerpf(jump_speed_base, jump_speed_max, clampf(curve_multiplier, 0.0, 1.0))

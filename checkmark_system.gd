@@ -27,7 +27,7 @@ func _ready():
 	world_parent = get_node(world_parent_path)
 	initial_height = player.global_position.y
 
-func _process(delta):
+func _process(_delta):
 	_manage_milestone_checkmarks()
 
 func _manage_milestone_checkmarks():
@@ -40,8 +40,11 @@ func _manage_milestone_checkmarks():
 		has_started = true
 
 	var player_y = player.global_position.y
-	var camera_x = camera.global_position.x if camera else 0
-	var current_milestone = int(abs(player_y) / (milestone_mark * pixels_per_meter))
+	var camera_x = 0.0
+	if camera:
+		camera_x = camera.global_position.x
+
+	var current_milestone = int(floor(abs(player_y) / (milestone_mark * pixels_per_meter)))
 
 	_spawn_ahead_milestones(current_milestone, camera_x)
 	_sync_checkmarks_to_camera(camera_x)

@@ -6,9 +6,9 @@ extends RigidBody2D
 
 @export var bullet_holder : Node
 
-@export var jump_speed := 400
-@export var attach_distance := 50
-@export var bullet_break_time_base := 0.9
+@export var jump_speed: float = 400
+@export var attach_distance: float = 50
+@export var bullet_break_time_base: float = 0.9
 
 var is_jumping := false
 var is_attached := false
@@ -124,7 +124,9 @@ func _detach_from_bullet(remove_bullet := true):
 	if !is_attached: return
 	if !attached_bullet: return
 
-	var bullet_to_remove = attached_bullet if remove_bullet else null
+	var bullet_to_remove = null
+	if remove_bullet:
+		bullet_to_remove = attached_bullet
 
 	_revert_bullet_velocity()
 	_reparent_to_original()

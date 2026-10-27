@@ -9,13 +9,13 @@ extends Node2D
 @export var player_path: NodePath = NodePath("../Player")
 
 @export var bullet_scene : PackedScene
-@export var bullet_spawn_interval_base := 0.55
-@export var pool_distance_ratio := 2.0 / 3.0
+@export var bullet_spawn_interval_base: float = 0.55
+@export var pool_distance_ratio: float = 2.0 / 3.0
 
 @onready var bullet_pool: Node = $BulletPool
 
-var current_spawntime := 0.
-var current_bullet_velocity := 200
+var current_spawntime: float = 0.0
+var current_bullet_velocity: float = 200.0
 var player: Node2D
 var player_start_position: Vector2
 
@@ -34,9 +34,9 @@ func _on_bullet_added(node: Node):
 	if !node.bullet_despawn_request.is_connected(_return_bullet_to_pool):
 		node.bullet_despawn_request.connect(_return_bullet_to_pool)
 
-func _spawn_wrapped_bullet(position: Vector2, velocity: Vector2):
+func _spawn_wrapped_bullet(spawn_position: Vector2, velocity: Vector2):
 	var bullet = _acquire_bullet()
-	bullet.activate(position, velocity, false)
+	bullet.activate(spawn_position, velocity, false)
 
 func _process(delta):
 	current_spawntime += delta
@@ -48,9 +48,9 @@ func _process(delta):
 
 func _spawn_new_bullet():
 	var bullet = _acquire_bullet()
-	var position = bullet_spawn_point.global_position
-	position.x += _get_random_x_offset()
-	bullet.activate(position, Vector2(0, current_bullet_velocity))
+	var spawn_position = bullet_spawn_point.global_position
+	spawn_position.x += _get_random_x_offset()
+	bullet.activate(spawn_position, Vector2(0, current_bullet_velocity))
 
 func _get_random_x_offset() -> float:
 	var shape = $CollisionShape2D.shape
@@ -71,8 +71,8 @@ func _acquire_bullet() -> RigidBody2D:
 func _return_bullet_to_pool(bullet: RigidBody2D):
 	if !is_instance_valid(bullet): return
 
-	bullet.deactivate()
-	bullet.reparent(bullet_pool)
+	bullet.deactivate.call_deferred()
+	bullet.reparent.call_deferred(bullet_pool)
 
 func _return_distant_bullets_to_pool():
 	if !player: return
