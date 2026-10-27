@@ -47,13 +47,17 @@ func _process(delta):
 	_return_distant_bullets_to_pool()
 
 func _spawn_new_bullet():
+	if !is_instance_valid(bullet_spawn_point): return
 	var bullet = _acquire_bullet()
 	var spawn_position = bullet_spawn_point.global_position
 	spawn_position.x += _get_random_x_offset()
 	bullet.activate(spawn_position, Vector2(0, current_bullet_velocity))
 
 func _get_random_x_offset() -> float:
-	var shape = $CollisionShape2D.shape
+	var collision_shape = $CollisionShape2D
+	if !is_instance_valid(collision_shape): return 0.0
+	var shape = collision_shape.shape
+	if !shape: return 0.0
 	var extents_x = shape.size.x / 2.0
 	return randf_range(-extents_x, extents_x)
 
@@ -70,6 +74,10 @@ func _acquire_bullet() -> RigidBody2D:
 
 func _return_bullet_to_pool(bullet: RigidBody2D):
 	if !is_instance_valid(bullet): return
+	if bullet.has_method("can_be_pooled"):
+		if !bullet.can_be_pooled():
+			bullet.queue_free()
+			return
 
 	bullet.deactivate.call_deferred()
 	bullet.reparent.call_deferred(bullet_pool)

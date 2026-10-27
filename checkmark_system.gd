@@ -33,6 +33,7 @@ func _process(_delta):
 func _manage_milestone_checkmarks():
 	if !checkmark_scene: return
 	if !world_parent: return
+	if !is_instance_valid(player): return
 
 	if !has_started:
 		if abs(player.global_position.y - initial_height) <= 50:

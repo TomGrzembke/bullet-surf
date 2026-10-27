@@ -62,8 +62,8 @@ shape = SubResource("RectangleShape2D_6emhd")
 [node name="Ground" type="Sprite2D" parent="." unique_id=967031519]
 modulate = Color(0.5432565, 0.5182228, 0.56698006, 1)
 z_index = -5
-position = Vector2(5, 372)
-scale = Vector2(28.379866, 2.259864)
+position = Vector2(5, 150.3687)
+scale = Vector2(28.379866, 0.5283695)
 texture = ExtResource("4_28aoi")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="Ground" unique_id=1921647187 groups=["floor"]]

@@ -17,7 +17,6 @@ var attached_bullet: RigidBody2D
 var jump_start_position: Vector2
 var jump_duration: float
 var jump_elapsed: float
-var original_parent: Node
 var attach_offset: Vector2
 var attach_time: float
 var current_break_time: float
@@ -40,6 +39,11 @@ func _update_jump(delta):
 	if !is_jumping: return
 	if !target_bullet: return
 
+	if target_bullet.has_method("get") && target_bullet.get("is_marked_for_pooling"):
+		if target_bullet.is_marked_for_pooling:
+			_on_jump_complete()
+			return
+
 	jump_elapsed += delta
 
 	var progress = min(jump_elapsed / jump_duration, 1.0)
@@ -59,6 +63,9 @@ func _update_jump(delta):
 func _update_attachment(delta):
 	if !is_attached: return
 
+	if is_instance_valid(attached_bullet):
+		global_position = attached_bullet.global_position + attach_offset
+
 	attach_time += delta
 	current_break_time = _get_current_break_time()
 	if attach_time >= current_break_time:
@@ -70,6 +77,26 @@ func _connect_bullet_signals(bullet: Node):
 
 	bullet.bullet_clicked.connect(_on_bullet_clicked)
 
+	if !bullet.has_signal("bullet_hit_ground"): return
+	if bullet.bullet_hit_ground.is_connected(_on_bullet_hit_ground): return
+
+	bullet.bullet_hit_ground.connect(_on_bullet_hit_ground)
+
+	if !bullet.has_signal("bullet_despawning"): return
+	if bullet.bullet_despawning.is_connected(_on_bullet_despawning): return
+
+	bullet.bullet_despawning.connect(_on_bullet_despawning)
+
+	if !bullet.has_signal("bullet_deactivating"): return
+	if bullet.bullet_deactivating.is_connected(_on_bullet_deactivating): return
+
+	bullet.bullet_deactivating.connect(_on_bullet_deactivating)
+
+	if !bullet.has_signal("bullet_activating"): return
+	if bullet.bullet_activating.is_connected(_on_bullet_activating): return
+
+	bullet.bullet_activating.connect(_on_bullet_activating)
+
 func _on_bullet_spawned(node: Node):
 	_connect_bullet_signals(node)
 
@@ -79,7 +106,26 @@ func _on_bullet_clicked(bullet: RigidBody2D):
 
 	jump_to_bullet(bullet)
 
+func _on_bullet_hit_ground(bullet: RigidBody2D):
+	pass
+
+func _on_bullet_despawning(bullet: RigidBody2D):
+	if is_attached and attached_bullet == bullet:
+		_detach_from_bullet(false)
+
+func _on_bullet_deactivating(bullet: RigidBody2D):
+	if is_attached and attached_bullet == bullet:
+		_detach_from_bullet(false)
+
+func _on_bullet_activating(bullet: RigidBody2D):
+	if is_attached and attached_bullet == bullet:
+		_detach_from_bullet(false)
+
 func jump_to_bullet(bullet: RigidBody2D):
+	if bullet.has_method("get") && bullet.get("is_marked_for_pooling"):
+		if bullet.is_marked_for_pooling:
+			return
+
 	is_jumping = true
 	target_bullet = bullet
 	jump_start_position = global_position
@@ -98,27 +144,34 @@ func _on_jump_complete():
 func _attach_to_bullet(bullet: RigidBody2D):
 	is_attached = true
 	attached_bullet = bullet
-	original_parent = get_parent()
 	attach_time = 0.0
 
 	_mark_bullet_used(bullet)
+	_mark_bullet_in_use(bullet)
 	_invert_bullet_velocity(bullet)
-	_reparent_to_bullet(bullet)
+	_calculate_attach_offset(jump_start_position)
 	freeze = true
 
 func _mark_bullet_used(bullet: RigidBody2D):
 	if bullet.has_method("set_on_cooldown"):
 		bullet.set_on_cooldown()
 
+func _mark_bullet_in_use(bullet: RigidBody2D):
+	if bullet.has_method("mark_in_use"):
+		bullet.mark_in_use()
+
+func _unmark_bullet_in_use():
+	if attached_bullet.has_method("mark_in_use"):
+		attached_bullet.is_in_use_by_player = false
+
 func _invert_bullet_velocity(bullet: RigidBody2D):
 	if bullet.has_method("invert_velocity"):
 		bullet.invert_velocity()
 
-func _reparent_to_bullet(bullet: RigidBody2D):
-	var current_global_pos = global_position
-	reparent(bullet)
-	global_position = current_global_pos
-	attach_offset = global_position - bullet.global_position
+func _calculate_attach_offset(start_position: Vector2):
+	var offset_distance = 50.0
+	var direction = (start_position - attached_bullet.global_position).normalized()
+	attach_offset = direction * offset_distance
 
 func _detach_from_bullet(remove_bullet := true):
 	if !is_attached: return
@@ -129,7 +182,7 @@ func _detach_from_bullet(remove_bullet := true):
 		bullet_to_remove = attached_bullet
 
 	_revert_bullet_velocity()
-	_reparent_to_original()
+	_unmark_bullet_in_use()
 	_reset_player_state()
 
 	if bullet_to_remove:
@@ -142,15 +195,10 @@ func _revert_bullet_velocity():
 	if attached_bullet.has_method("revert_velocity"):
 		attached_bullet.revert_velocity()
 
-func _reparent_to_original():
-	reparent(original_parent)
-	global_position = attached_bullet.global_position + attach_offset
-
 func _reset_player_state():
 	is_attached = false
 	attached_bullet = null
-	original_parent = null
-	freeze = false
+	set_deferred("freeze", false)
 	linear_velocity = Vector2.ZERO
 
 func _get_current_break_time() -> float:

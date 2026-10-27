@@ -7,6 +7,10 @@ extends RigidBody2D
 signal bullet_clicked(bullet: RigidBody2D)
 signal bullet_spawn_request(spawn_position: Vector2, velocity: Vector2)
 signal bullet_despawn_request(bullet: RigidBody2D)
+signal bullet_hit_ground(bullet: RigidBody2D)
+signal bullet_despawning(bullet: RigidBody2D)
+signal bullet_deactivating(bullet: RigidBody2D)
+signal bullet_activating(bullet: RigidBody2D)
 
 @export var wrap_buffer: float = 100
 
@@ -24,6 +28,8 @@ var click_time: float = 0.0
 var click_reset_time: float = 3.0
 var original_velocity: float = 0.0
 var is_click_area_enabled := true
+var is_in_use_by_player := false
+var is_marked_for_pooling := false
 
 func _ready():
 	original_velocity = bullet_velocity
@@ -119,6 +125,11 @@ func _on_area_input_event(_viewport, event, _shape_idx):
 func _on_body_entered(body: Node):
 	if !body.is_in_group("floor"): return
 
+	if is_in_use_by_player:
+		invert_velocity()
+		return
+
+	bullet_hit_ground.emit(self)
 	request_despawn()
 
 func _is_click_press(event) -> bool:
@@ -153,6 +164,7 @@ func revert_velocity():
 	bullet_velocity = original_velocity
 
 func activate(spawn_position: Vector2, velocity: Vector2, can_wrap := true):
+	bullet_activating.emit(self)
 	global_position = spawn_position
 	linear_velocity = velocity
 	bullet_velocity = velocity.y
@@ -165,13 +177,24 @@ func activate(spawn_position: Vector2, velocity: Vector2, can_wrap := true):
 	freeze = false
 	set_physics_process(true)
 	_set_click_area_enabled(true)
+	is_in_use_by_player = false
+	is_marked_for_pooling = false
+
+func mark_in_use():
+	is_in_use_by_player = true
+
+func can_be_pooled() -> bool:
+	return !is_in_use_by_player
 
 func request_despawn():
 	bullet_despawn_request.emit(self)
 
 func deactivate():
+	is_marked_for_pooling = true
 	linear_velocity = Vector2.ZERO
 	visible = false
 	freeze = true
 	_set_click_area_enabled(false)
 	set_physics_process(false)
+	bullet_deactivating.emit(self)
+	bullet_despawning.emit(self)
