@@ -7,7 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://bbpythex6xqg3" path="res://checkmark.tscn" id="4_checkmark"]
 [ext_resource type="Script" uid="uid://df32or4ibhygo" path="res://level_design_preview.gd" id="5_preview"]
 [ext_resource type="Resource" uid="uid://cy6mepeox47bi" path="res://settings/preview_settings.tres" id="6_preview_settings"]
-[ext_resource type="PackedScene" uid="uid://bmvtsewyhtgba" path="res://bullet.tscn" id="7_do7ug"]
+[ext_resource type="PackedScene" uid="uid://bmvtsewyhtgba" path="res://bullet.tscn" id="7_bullet"]
+[ext_resource type="Script" uid="uid://bnh1cx3m7pf7k" path="res://pattern_editor.gd" id="8_pattern_editor"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_flrdo"]
 size = Vector2(255.77995, 247.80257)
@@ -16,36 +17,20 @@ size = Vector2(255.77995, 247.80257)
 
 [node name="BulletHolder" type="Node" parent="." unique_id=1406013643]
 
-[node name="Bullet" parent="BulletHolder" unique_id=40867637 instance=ExtResource("7_do7ug")]
+[node name="Bullet" parent="BulletHolder" unique_id=40867637 instance=ExtResource("7_bullet")]
 position = Vector2(-194, -618)
 bullet_velocity = 0.0
 
-[node name="Bullet2" parent="BulletHolder" unique_id=592537245 instance=ExtResource("7_do7ug")]
+[node name="Bullet2" parent="BulletHolder" unique_id=592537245 instance=ExtResource("7_bullet")]
 position = Vector2(194, -933)
 bullet_velocity = 0.0
 
-[node name="Bullet3" parent="BulletHolder" unique_id=1945091887 instance=ExtResource("7_do7ug")]
+[node name="Bullet3" parent="BulletHolder" unique_id=1945091887 instance=ExtResource("7_bullet")]
 position = Vector2(-206, -1244)
 bullet_velocity = 0.0
 
-[node name="Bullet4" parent="BulletHolder" unique_id=1203700850 instance=ExtResource("7_do7ug")]
+[node name="Bullet4" parent="BulletHolder" unique_id=1203700850 instance=ExtResource("7_bullet")]
 position = Vector2(206, -1559)
-bullet_velocity = 0.0
-
-[node name="Bullet5" parent="BulletHolder" unique_id=1199038603 instance=ExtResource("7_do7ug")]
-position = Vector2(-194, -1882)
-bullet_velocity = 0.0
-
-[node name="Bullet6" parent="BulletHolder" unique_id=322390820 instance=ExtResource("7_do7ug")]
-position = Vector2(194, -2197)
-bullet_velocity = 0.0
-
-[node name="Bullet7" parent="BulletHolder" unique_id=833774258 instance=ExtResource("7_do7ug")]
-position = Vector2(-206, -2508)
-bullet_velocity = 0.0
-
-[node name="Bullet8" parent="BulletHolder" unique_id=957344260 instance=ExtResource("7_do7ug")]
-position = Vector2(206, -2823)
 bullet_velocity = 0.0
 
 [node name="Player" parent="." unique_id=1232459265 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("1_j6bxh")]
@@ -61,7 +46,7 @@ position = Vector2(0, -965)
 position = Vector2(0, -350)
 script = ExtResource("3_fgctn")
 follow_obj = NodePath("../Player")
-follow_offset = Vector2(0, -400)
+follow_offset = Vector2(0, -300)
 
 [node name="Ground" type="Sprite2D" parent="." unique_id=68252058]
 modulate = Color(0.5432565, 0.5182228, 0.56698006, 1)
@@ -82,4 +67,11 @@ script = ExtResource("5_preview")
 settings = ExtResource("3_settings")
 preview_settings = ExtResource("6_preview_settings")
 checkmark_scene = ExtResource("4_checkmark")
+start_point = NodePath("../Player")
+
+[node name="PatternEditor" type="Node2D" parent="." unique_id=519040021 node_paths=PackedStringArray("start_point")]
+script = ExtResource("8_pattern_editor")
+bullet_scene = ExtResource("7_bullet")
+settings = ExtResource("3_settings")
+preview_settings = ExtResource("6_preview_settings")
 start_point = NodePath("../Player")

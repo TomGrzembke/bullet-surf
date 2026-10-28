@@ -12,12 +12,17 @@ extends Node2D
 @export var bullet_spawn_interval_base: float = 0.55
 @export var pool_distance_ratio: float = 2.0 / 3.0
 
+@export var predetermined_patterns: Array[BulletPattern] = []
+@export var random_pattern_pool: Array[BulletPattern] = []
+@export var use_patterns: bool = true
+
 @onready var bullet_pool: Node = $BulletPool
 
 var current_spawntime: float = 0.0
 var current_bullet_velocity: float = 200.0
 var player: Node2D
 var player_start_position: Vector2
+var pattern_index: int = 0
 
 func _ready():
 	bullet_holder.child_entered_tree.connect(_on_bullet_added)
@@ -48,10 +53,40 @@ func _process(delta):
 
 func _spawn_new_bullet():
 	if !is_instance_valid(bullet_spawn_point): return
+
+	if use_patterns:
+		_spawn_pattern()
+	else:
+		_spawn_single_bullet()
+
+func _spawn_single_bullet():
 	var bullet = _acquire_bullet()
 	var spawn_position = bullet_spawn_point.global_position
 	spawn_position.x += _get_random_x_offset()
 	bullet.activate(spawn_position, Vector2(0, current_bullet_velocity))
+
+func _spawn_pattern():
+	var pattern = _get_next_pattern()
+	if !pattern: return
+
+	var spawn_base = bullet_spawn_point.global_position
+
+	for offset in pattern.bullet_offsets:
+		var bullet = _acquire_bullet()
+		var spawn_position = spawn_base + offset
+		bullet.activate(spawn_position, Vector2(0, current_bullet_velocity))
+
+func _get_next_pattern() -> BulletPattern:
+	if predetermined_patterns.is_empty() && random_pattern_pool.is_empty(): return null
+
+	if pattern_index < predetermined_patterns.size():
+		var pattern = predetermined_patterns[pattern_index]
+		pattern_index += 1
+		return pattern
+
+	if random_pattern_pool.is_empty(): return null
+
+	return random_pattern_pool.pick_random()
 
 func _get_random_x_offset() -> float:
 	var collision_shape = $CollisionShape2D

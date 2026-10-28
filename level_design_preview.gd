@@ -9,6 +9,7 @@ extends Node2D
 @export var checkmark_scene: PackedScene
 @export var start_point: Node2D
 
+@warning_ignore("unused_private_class_variable")
 @export_tool_button("Redraw Preview") var _sync_btn = redraw_preview
 
 func redraw_preview():

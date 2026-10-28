@@ -44,7 +44,8 @@ checkmark_scene = ExtResource("6_ns2nk")
 
 [node name="Player" parent="." unique_id=1232459265 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("1_pq8q7")]
 bullet_holder = NodePath("../BulletHolder")
-auto_attach_range = 150.0
+attach_distance = 70.0
+auto_attach_range = 90.0
 auto_attach_frame_skip = 4
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=169432101]
