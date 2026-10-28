@@ -9,6 +9,7 @@
 [ext_resource type="Resource" uid="uid://cy6mepeox47bi" path="res://settings/preview_settings.tres" id="6_preview_settings"]
 [ext_resource type="PackedScene" uid="uid://bmvtsewyhtgba" path="res://bullet.tscn" id="7_bullet"]
 [ext_resource type="Script" uid="uid://bnh1cx3m7pf7k" path="res://pattern_editor.gd" id="8_pattern_editor"]
+[ext_resource type="Resource" uid="uid://x3kn37b83ge6" path="res://patterns/zigzag_pattern.tres" id="10_4u5df"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_flrdo"]
 size = Vector2(255.77995, 247.80257)
@@ -16,22 +17,6 @@ size = Vector2(255.77995, 247.80257)
 [node name="GridLvl" type="Node2D" unique_id=142700249]
 
 [node name="BulletHolder" type="Node" parent="." unique_id=1406013643]
-
-[node name="Bullet" parent="BulletHolder" unique_id=40867637 instance=ExtResource("7_bullet")]
-position = Vector2(-194, -618)
-bullet_velocity = 0.0
-
-[node name="Bullet2" parent="BulletHolder" unique_id=592537245 instance=ExtResource("7_bullet")]
-position = Vector2(194, -933)
-bullet_velocity = 0.0
-
-[node name="Bullet3" parent="BulletHolder" unique_id=1945091887 instance=ExtResource("7_bullet")]
-position = Vector2(-206, -1244)
-bullet_velocity = 0.0
-
-[node name="Bullet4" parent="BulletHolder" unique_id=1203700850 instance=ExtResource("7_bullet")]
-position = Vector2(206, -1559)
-bullet_velocity = 0.0
 
 [node name="Player" parent="." unique_id=1232459265 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("1_j6bxh")]
 bullet_holder = NodePath("../BulletHolder")
@@ -75,3 +60,20 @@ bullet_scene = ExtResource("7_bullet")
 settings = ExtResource("3_settings")
 preview_settings = ExtResource("6_preview_settings")
 start_point = NodePath("../Player")
+current_pattern = ExtResource("10_4u5df")
+
+[node name="Bullet" parent="PatternEditor" unique_id=40867637 instance=ExtResource("7_bullet")]
+position = Vector2(-194, -618)
+bullet_velocity = 0.0
+
+[node name="Bullet2" parent="PatternEditor" unique_id=592537245 instance=ExtResource("7_bullet")]
+position = Vector2(194, -933)
+bullet_velocity = 0.0
+
+[node name="Bullet3" parent="PatternEditor" unique_id=1945091887 instance=ExtResource("7_bullet")]
+position = Vector2(-206, -1244)
+bullet_velocity = 0.0
+
+[node name="Bullet4" parent="PatternEditor" unique_id=1203700850 instance=ExtResource("7_bullet")]
+position = Vector2(206, -1559)
+bullet_velocity = 0.0
