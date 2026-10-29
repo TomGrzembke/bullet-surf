@@ -36,13 +36,14 @@ player_path = NodePath("Player")
 bullet_holder_path = NodePath("BulletHolder")
 bullet_spawn_path = NodePath("BulletSpawn")
 jump_speed_base = 622
-jump_speed_max = 1800
+jump_speed_max = 1300
 jump_speed_upgrade_curve = ExtResource("9_jump_speed_curve")
-jump_speed_curve_checkpoint_count = 37
-bullet_break_time_min = 0.35
+jump_speed_curve_checkpoint_count = 32
+bullet_break_time_min = 0.5
 bullet_velocity_base = 260
-bullet_velocity_max = 800
-spawn_interval_min = 0.2
+bullet_velocity_max = 400
+velocity_increase_per_100m = 25
+spawn_interval_min = 0.55
 
 [node name="CheckmarkSystem" type="Node2D" parent="." unique_id=808336557 node_paths=PackedStringArray("camera")]
 script = ExtResource("10_checkmark")
@@ -63,13 +64,13 @@ attach_distance = 70.0
 auto_attach_range = 90.0
 auto_attach_frame_skip = 4
 
-[node name="BulletSpawnPoint" type="Node2D" parent="Player" unique_id=1856562774]
+[node name="BulletSpawnPoint" type="Node2D" parent="." unique_id=1856562774]
 position = Vector2(0, -965)
 
 [node name="BulletSpawn" parent="." unique_id=1153249258 node_paths=PackedStringArray("bullet_holder", "bullet_spawn_point") instance=ExtResource("2_vvh5c")]
 position = Vector2(0, -883)
 bullet_holder = NodePath("../BulletHolder")
-bullet_spawn_point = NodePath("../Player/BulletSpawnPoint")
+bullet_spawn_point = NodePath("../BulletSpawnPoint")
 predetermined_patterns = Array[ExtResource("8_eji0w")]([SubResource("Resource_qwhpj")])
 random_pattern_pool = Array[ExtResource("8_eji0w")]([ExtResource("9_eji0w"), ExtResource("10_qwhpj")])
 

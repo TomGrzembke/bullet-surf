@@ -16,6 +16,10 @@ extends Node2D
 @export var random_pattern_pool: Array[BulletPattern] = []
 @export var use_patterns: bool = true
 
+@export var lookahead_distance: float = 900.0
+@export var minimal_distance: float = 100.0
+@export var spawn_point_move_speed: float = 3000.0
+
 @onready var bullet_pool: Node = $BulletPool
 
 var current_spawntime: float = 0.0
@@ -27,6 +31,8 @@ var last_pattern_y_extent: float = 0.0
 var _pattern_spawn_y: float = 0.0
 var pattern_bullets: Array = []
 var _pattern_spawn_time: float = 0.0
+var _spawn_point_y: float = 0.0
+var _player_last_y: float = 0.0
 
 func _ready():
 	bullet_holder.child_entered_tree.connect(_on_bullet_added)
@@ -34,6 +40,8 @@ func _ready():
 		_on_bullet_added(bullet)
 	player = get_node(player_path)
 	player_start_position = player.global_position
+	_spawn_point_y = bullet_spawn_point.global_position.y
+	_player_last_y = player.global_position.y
 
 func _on_bullet_added(node: Node):
 	if !node.has_signal("bullet_spawn_request"): return
@@ -53,10 +61,37 @@ func _process(delta):
 		current_spawntime = 0
 		_spawn_new_bullet()
 
+	_update_spawn_point_position(delta)
 	_return_distant_bullets_to_pool()
 	_cleanup_pattern_bullets()
 
+func _update_spawn_point_position(delta):
+	if !player: return
+
+	var player_y = player.global_position.y
+	var player_velocity_y = (player_y - _player_last_y) / delta
+	_player_last_y = player_y
+
+	var target_y: float
+
+	if player_velocity_y < 0:
+		target_y = player_y - lookahead_distance
+	else:
+		target_y = player_y - minimal_distance
+
+	if target_y < _spawn_point_y:
+		_spawn_point_y = target_y
+		print("Spawn point moved to: %f (Player Y: %f, Velocity: %f)" % [_spawn_point_y, player_y, player_velocity_y])
+
+	bullet_spawn_point.global_position.y = _spawn_point_y
+
 func _spawn_new_bullet():
+	if !is_instance_valid(bullet_spawn_point): return
+
+	if use_patterns:
+		_spawn_pattern()
+	else:
+		_spawn_single_bullet()
 	if !is_instance_valid(bullet_spawn_point): return
 
 	if use_patterns:
@@ -67,6 +102,7 @@ func _spawn_new_bullet():
 func _spawn_single_bullet():
 	var bullet = _acquire_bullet()
 	var spawn_position = bullet_spawn_point.global_position
+	spawn_position.y = _spawn_point_y
 	spawn_position.x += _get_random_x_offset()
 	bullet.activate(spawn_position, Vector2(0, current_bullet_velocity))
 
@@ -91,9 +127,9 @@ func _spawn_pattern():
 				max_y = offset.y
 
 		last_pattern_y_extent = max_y - min_y
-		_pattern_spawn_y = spawn_base.y
+		_pattern_spawn_y = _spawn_point_y
 		_pattern_spawn_time = Time.get_ticks_msec() / 1000.0
-		print("Spawned pattern with %d bullets, Y extent: %f" % [pattern.bullet_offsets.size(), last_pattern_y_extent])
+		print("Spawned pattern with %d bullets, Y extent: %f, spawn point Y: %f" % [pattern.bullet_offsets.size(), last_pattern_y_extent, _spawn_point_y])
 	else:
 		_check_pattern_passed_spawn()
 
@@ -156,11 +192,16 @@ func _return_distant_bullets_to_pool():
 func _check_pattern_passed_spawn():
 	if pattern_bullets.is_empty(): return
 
-	var current_time = Time.get_ticks_msec() / 1000.0
-	var time_elapsed = current_time - _pattern_spawn_time
-	var time_needed = last_pattern_y_extent / current_bullet_velocity
+	var time_elapsed = (Time.get_ticks_msec() / 1000.0) - _pattern_spawn_time
+	var base_time_needed = last_pattern_y_extent / current_bullet_velocity
 	
-	if time_elapsed >= time_needed:
+	var spawn_point_moved_up = _pattern_spawn_y - _spawn_point_y
+	var distance_credit = max(0, spawn_point_moved_up)
+	var time_credit = distance_credit / current_bullet_velocity
+	
+	var adjusted_time_needed = max(0, base_time_needed - time_credit)
+	
+	if time_elapsed >= adjusted_time_needed:
 		pattern_bullets.clear()
 		print("Pattern passed spawn point, ready for next pattern")
 
@@ -175,6 +216,9 @@ func _cleanup_pattern_bullets():
 
 	for bullet in bullets_to_remove:
 		pattern_bullets.erase(bullet)
+	
+	if pattern_bullets.is_empty():
+		print("All pattern bullets pooled, ready for next pattern")
 
 func set_spawn_interval(value: float):
 	bullet_spawn_interval_base = value
