@@ -81,7 +81,6 @@ func _update_spawn_point_position(delta):
 
 	if target_y < _spawn_point_y:
 		_spawn_point_y = target_y
-		print("Spawn point moved to: %f (Player Y: %f, Velocity: %f)" % [_spawn_point_y, player_y, player_velocity_y])
 
 	bullet_spawn_point.global_position.y = _spawn_point_y
 
@@ -129,7 +128,6 @@ func _spawn_pattern():
 		last_pattern_y_extent = max_y - min_y
 		_pattern_spawn_y = _spawn_point_y
 		_pattern_spawn_time = Time.get_ticks_msec() / 1000.0
-		print("Spawned pattern with %d bullets, Y extent: %f, spawn point Y: %f" % [pattern.bullet_offsets.size(), last_pattern_y_extent, _spawn_point_y])
 	else:
 		_check_pattern_passed_spawn()
 
@@ -203,7 +201,6 @@ func _check_pattern_passed_spawn():
 	
 	if time_elapsed >= adjusted_time_needed:
 		pattern_bullets.clear()
-		print("Pattern passed spawn point, ready for next pattern")
 
 func _cleanup_pattern_bullets():
 	if pattern_bullets.is_empty(): return
@@ -216,9 +213,6 @@ func _cleanup_pattern_bullets():
 
 	for bullet in bullets_to_remove:
 		pattern_bullets.erase(bullet)
-	
-	if pattern_bullets.is_empty():
-		print("All pattern bullets pooled, ready for next pattern")
 
 func set_spawn_interval(value: float):
 	bullet_spawn_interval_base = value

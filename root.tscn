@@ -53,7 +53,7 @@ milestone_mark = 25
 checkmark_scene = ExtResource("6_ns2nk")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=613743234 node_paths=PackedStringArray("follow_obj")]
-position = Vector2(0, -700)
+position = Vector2(0, -328)
 script = ExtResource("6_qt76e")
 follow_obj = NodePath("../Player")
 follow_offset = Vector2(0, -300)
