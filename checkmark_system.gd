@@ -5,6 +5,7 @@ extends Node2D
 
 @export var player_path: NodePath = NodePath("../Player")
 @export var world_parent_path: NodePath = NodePath("..")
+@export var camera: Camera2D
 
 @export var settings: UnitSettings
 @export var milestone_mark := 100
@@ -14,7 +15,6 @@ extends Node2D
 @export var checkmark_scene: PackedScene
 
 var player: Node2D
-var camera: Camera2D
 var world_parent: Node
 var spawned_milestones := {}
 var milestone_checkmarks := {}
@@ -23,7 +23,6 @@ var has_started := false
 
 func _ready():
 	player = get_node(player_path)
-	camera = player.get_node("Camera2D")
 	world_parent = get_node(world_parent_path)
 	initial_height = player.global_position.y
 

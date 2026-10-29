@@ -7,6 +7,7 @@
 [ext_resource type="Resource" uid="uid://7clh20p0rw6q" path="res://settings/unit_settings.tres" id="4_qw60f"]
 [ext_resource type="Script" uid="uid://dvqi135ysy0i" path="res://ui.gd" id="5_jnlp7"]
 [ext_resource type="PackedScene" uid="uid://bbpythex6xqg3" path="res://checkmark.tscn" id="6_ns2nk"]
+[ext_resource type="Script" uid="uid://da4l4sfxfcv7u" path="res://scenes/cam_follow.gd" id="6_qt76e"]
 [ext_resource type="Script" uid="uid://dl0pgo3ytyojy" path="res://difficulty_manager.gd" id="7_difficulty"]
 [ext_resource type="Script" uid="uid://4rdtlch43bdc" path="res://poki_base.gd" id="8_bf3um"]
 [ext_resource type="Script" uid="uid://6u2823lllhdc" path="res://bullet_pattern.gd" id="8_eji0w"]
@@ -43,11 +44,18 @@ bullet_velocity_base = 260
 bullet_velocity_max = 800
 spawn_interval_min = 0.2
 
-[node name="CheckmarkSystem" type="Node2D" parent="." unique_id=808336557]
+[node name="CheckmarkSystem" type="Node2D" parent="." unique_id=808336557 node_paths=PackedStringArray("camera")]
 script = ExtResource("10_checkmark")
+camera = NodePath("../Camera2D")
 settings = ExtResource("4_qw60f")
 milestone_mark = 25
 checkmark_scene = ExtResource("6_ns2nk")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=613743234 node_paths=PackedStringArray("follow_obj")]
+position = Vector2(0, -700)
+script = ExtResource("6_qt76e")
+follow_obj = NodePath("../Player")
+follow_offset = Vector2(0, -300)
 
 [node name="Player" parent="." unique_id=1232459265 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("1_pq8q7")]
 bullet_holder = NodePath("../BulletHolder")
@@ -55,14 +63,11 @@ attach_distance = 70.0
 auto_attach_range = 90.0
 auto_attach_frame_skip = 4
 
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=169432101]
-position = Vector2(0, -350)
-
 [node name="BulletSpawnPoint" type="Node2D" parent="Player" unique_id=1856562774]
 position = Vector2(0, -965)
 
 [node name="BulletSpawn" parent="." unique_id=1153249258 node_paths=PackedStringArray("bullet_holder", "bullet_spawn_point") instance=ExtResource("2_vvh5c")]
-position = Vector2(0, -959)
+position = Vector2(0, -883)
 bullet_holder = NodePath("../BulletHolder")
 bullet_spawn_point = NodePath("../Player/BulletSpawnPoint")
 predetermined_patterns = Array[ExtResource("8_eji0w")]([SubResource("Resource_qwhpj")])
