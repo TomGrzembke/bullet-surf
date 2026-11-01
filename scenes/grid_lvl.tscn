@@ -61,19 +61,3 @@ settings = ExtResource("3_settings")
 preview_settings = ExtResource("6_preview_settings")
 start_point = NodePath("../Player")
 current_pattern = ExtResource("10_3g75f")
-
-[node name="Bullet" parent="PatternEditor" unique_id=40867637 instance=ExtResource("7_bullet")]
-position = Vector2(-6, -933)
-metadata/pattern_offset = Vector2(0, -1240)
-
-[node name="@RigidBody2D@950435" parent="PatternEditor" unique_id=1134616567 instance=ExtResource("7_bullet")]
-position = Vector2(-6, -620)
-metadata/pattern_offset = Vector2(0, -620)
-
-[node name="@RigidBody2D@950436" parent="PatternEditor" unique_id=119960186 instance=ExtResource("7_bullet")]
-position = Vector2(-6, -319)
-metadata/pattern_offset = Vector2(0, -319)
-
-[node name="@RigidBody2D@950437" parent="PatternEditor" unique_id=1855082464 instance=ExtResource("7_bullet")]
-position = Vector2(5, 0)
-metadata/pattern_offset = Vector2(0, 0)

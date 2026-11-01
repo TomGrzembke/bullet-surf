@@ -72,7 +72,7 @@ position = Vector2(0, -883)
 bullet_holder = NodePath("../BulletHolder")
 bullet_spawn_point = NodePath("../BulletSpawnPoint")
 predetermined_patterns = Array[ExtResource("8_eji0w")]([ExtResource("10_r3r3k"), ExtResource("13_r3r3k"), ExtResource("12_blcw0"), ExtResource("10_qwhpj"), ExtResource("9_eji0w")])
-random_pattern_pool = Array[ExtResource("8_eji0w")]([ExtResource("9_eji0w"), ExtResource("10_qwhpj"), ExtResource("13_r3r3k")])
+random_pattern_pool = Array[ExtResource("8_eji0w")]([ExtResource("9_eji0w"), ExtResource("13_r3r3k")])
 
 [node name="CollisionShape2D" parent="BulletSpawn" index="0" unique_id=608612395]
 shape = SubResource("RectangleShape2D_6emhd")

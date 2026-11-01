@@ -55,6 +55,9 @@ func clear_bullets():
 		if is_instance_valid(bullet):
 			bullet.queue_free()
 	pattern_bullets.clear()
+	
+	for child in get_children(true):
+		child.queue_free()
 
 func save_pattern():
 	var offsets: Array[Vector2] = []
