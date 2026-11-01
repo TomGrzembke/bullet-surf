@@ -15,10 +15,13 @@ extends Node2D
 		load_pattern()
 
 var pattern_bullets := []
+var last_start_pos := Vector2.ZERO
 
 func _process(_delta):
 	if Engine.is_editor_hint():
-		_sync_bullets_to_start_point()
+		if start_point && start_point.global_position != last_start_pos:
+			_sync_bullets_to_start_point()
+			last_start_pos = start_point.global_position
 
 func _sync_bullets_to_start_point():
 	if !start_point: return
@@ -40,6 +43,7 @@ func add_bullet():
 	if start_point:
 		bullet.global_position = start_point.global_position
 	bullet.set_meta("pattern_offset", Vector2.ZERO)
+	bullet.set_meta("manually_moved", false)
 	add_child(bullet)
 	bullet.set_owner(get_tree().edited_scene_root)
 	pattern_bullets.append(bullet)
@@ -70,6 +74,8 @@ func save_pattern():
 		if child is RigidBody2D:
 			var offset = child.global_position - start_pos
 			offsets.append(offset)
+			child.set_meta("pattern_offset", offset)
+			child.set_meta("manually_moved", false)
 
 	if offsets.is_empty(): return
 
@@ -164,6 +170,7 @@ func _load_current_pattern():
 		var bullet = bullet_scene.instantiate()
 		bullet.global_position = start_pos + offset
 		bullet.set_meta("pattern_offset", offset)
+		bullet.set_meta("manually_moved", false)
 		add_child(bullet)
 		bullet.set_owner(get_tree().edited_scene_root)
 		pattern_bullets.append(bullet)
