@@ -9,7 +9,7 @@
 [ext_resource type="Resource" uid="uid://cy6mepeox47bi" path="res://settings/preview_settings.tres" id="6_preview_settings"]
 [ext_resource type="PackedScene" uid="uid://bmvtsewyhtgba" path="res://bullet.tscn" id="7_bullet"]
 [ext_resource type="Script" uid="uid://bnh1cx3m7pf7k" path="res://pattern_editor.gd" id="8_pattern_editor"]
-[ext_resource type="Resource" uid="uid://cy4a1d6jnd84u" path="res://patterns/straight_pattern.tres" id="10_3g75f"]
+[ext_resource type="Resource" uid="uid://x3kn37b83ge6" path="res://patterns/zigzag_pattern.tres" id="10_3g75f"]
 [ext_resource type="Script" uid="uid://b1bcelpofhg8m" path="res://bullet.gd" id="11_3g75f"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_flrdo"]
@@ -64,45 +64,41 @@ start_point = NodePath("../Player")
 current_pattern = ExtResource("10_3g75f")
 
 [node name="Bullet" type="RigidBody2D" parent="PatternEditor" unique_id=40867637 instance=ExtResource("7_bullet")]
-position = Vector2(-6, -933)
+position = Vector2(-194, -4)
 collision_layer = 2
 collision_mask = 4
 gravity_scale = 0.0
 contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("11_3g75f")
-wrap_buffer = 20
-metadata/pattern_offset = Vector2(-6, -933)
+metadata/pattern_offset = Vector2(-194, -4)
 
-[node name="@RigidBody2D@176935" type="RigidBody2D" parent="PatternEditor" unique_id=1167505694 instance=ExtResource("7_bullet")]
-position = Vector2(-6, -620)
+[node name="@RigidBody2D@2142414" type="RigidBody2D" parent="PatternEditor" unique_id=349494306 instance=ExtResource("7_bullet")]
+position = Vector2(194, -319)
 collision_layer = 2
 collision_mask = 4
 gravity_scale = 0.0
 contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("11_3g75f")
-wrap_buffer = 20
-metadata/pattern_offset = Vector2(-6, -620)
+metadata/pattern_offset = Vector2(194, -319)
 
-[node name="@RigidBody2D@176936" type="RigidBody2D" parent="PatternEditor" unique_id=401496402 instance=ExtResource("7_bullet")]
-position = Vector2(-6, -319)
+[node name="@RigidBody2D@2142415" type="RigidBody2D" parent="PatternEditor" unique_id=681283884 instance=ExtResource("7_bullet")]
+position = Vector2(-206, -630)
 collision_layer = 2
 collision_mask = 4
 gravity_scale = 0.0
 contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("11_3g75f")
-wrap_buffer = 20
-metadata/pattern_offset = Vector2(-6, -319)
+metadata/pattern_offset = Vector2(-206, -630)
 
-[node name="@RigidBody2D@176937" type="RigidBody2D" parent="PatternEditor" unique_id=1828421210 instance=ExtResource("7_bullet")]
-position = Vector2(5, 0)
+[node name="@RigidBody2D@2142416" type="RigidBody2D" parent="PatternEditor" unique_id=1038032894 instance=ExtResource("7_bullet")]
+position = Vector2(206, -945)
 collision_layer = 2
 collision_mask = 4
 gravity_scale = 0.0
 contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("11_3g75f")
-wrap_buffer = 20
-metadata/pattern_offset = Vector2(5, 0)
+metadata/pattern_offset = Vector2(206, -945)

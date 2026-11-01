@@ -11,10 +11,12 @@ signal bullet_hit_ground(bullet: RigidBody2D)
 signal bullet_despawning(bullet: RigidBody2D)
 signal bullet_deactivating(bullet: RigidBody2D)
 signal bullet_activating(bullet: RigidBody2D)
+signal tutorial_bullet_attached(bullet: RigidBody2D)
 
 @export var wrap_buffer: float = 100
 
 @export var bullet_velocity: float = 200
+
 
 @onready var click_area: Area2D = $ClickArea
 @onready var click_collision: CollisionShape2D = $ClickArea/CollisionShape2D
@@ -30,6 +32,8 @@ var original_velocity: float = 0.0
 var is_click_area_enabled := true
 var is_in_use_by_player := false
 var is_marked_for_pooling := false
+var is_tutorial_bullet := false
+var tutorial_used := false
 
 func _ready():
 	original_velocity = bullet_velocity
@@ -43,8 +47,12 @@ func _connect_click_area():
 	click_area.input_event.connect(_on_area_input_event)
 
 func _physics_process(delta):
-	linear_velocity.y = bullet_velocity
-	if _check_screen_wrap(): return
+	if is_tutorial_bullet && !tutorial_used:
+		linear_velocity.y = 0
+	else:
+		linear_velocity.y = bullet_velocity
+	
+	#if _check_screen_wrap(): return
 
 	_reset_click_cooldown(delta)
 	_update_click_area()
@@ -179,9 +187,19 @@ func activate(spawn_position: Vector2, velocity: Vector2, can_wrap := true):
 	_set_click_area_enabled(true)
 	is_in_use_by_player = false
 	is_marked_for_pooling = false
+	
+	if is_tutorial_bullet && tutorial_used:
+		is_tutorial_bullet = false
+	tutorial_used = false
 
 func mark_in_use():
 	is_in_use_by_player = true
+	if is_tutorial_bullet && !tutorial_used:
+		tutorial_used = true
+		tutorial_bullet_attached.emit(self)
+
+func set_as_tutorial_bullet():
+	is_tutorial_bullet = true
 
 func can_be_pooled() -> bool:
 	return !is_in_use_by_player

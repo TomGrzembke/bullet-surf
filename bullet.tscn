@@ -12,11 +12,11 @@ radius = 150.0
 [node name="Bullet" type="RigidBody2D" unique_id=40867637]
 collision_layer = 2
 collision_mask = 4
+gravity_scale = 0.0
 contact_monitor = true
 max_contacts_reported = 1
-gravity_scale = 0.0
 script = ExtResource("1_v8qja")
-wrap_buffer = 20
+downward_bullet_velocity = -200.0
 
 [node name="Circle" type="Sprite2D" parent="." unique_id=686925077]
 modulate = Color(0.97237104, 0.49535888, 0.6088033, 1)

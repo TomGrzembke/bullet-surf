@@ -7,6 +7,7 @@ extends Node2D
 @export var bullet_holder : Node
 @export var bullet_spawn_point : Node
 @export var player_path: NodePath = NodePath("../Player")
+@export var tutorial_bullet: RigidBody2D
 
 @export var bullet_scene : PackedScene
 @export var bullet_spawn_interval_base: float = 0.55
@@ -19,6 +20,7 @@ extends Node2D
 @export var lookahead_distance: float = 900.0
 @export var minimal_distance: float = 100.0
 @export var spawn_point_move_speed: float = 3000.0
+@export var spawn_enabled: bool = false
 
 @onready var bullet_pool: Node = $BulletPool
 
@@ -42,6 +44,14 @@ func _ready():
 	player_start_position = player.global_position
 	_spawn_point_y = bullet_spawn_point.global_position.y
 	_player_last_y = player.global_position.y
+	
+	if is_instance_valid(tutorial_bullet):
+		if tutorial_bullet.has_method("set_as_tutorial_bullet"):
+			tutorial_bullet.set_as_tutorial_bullet()
+		if tutorial_bullet.has_signal("tutorial_bullet_attached"):
+			if !tutorial_bullet.tutorial_bullet_attached.is_connected(_on_tutorial_bullet_attached):
+				tutorial_bullet.tutorial_bullet_attached.connect(_on_tutorial_bullet_attached)
+		tutorial_bullet.linear_velocity = Vector2(0, current_bullet_velocity)
 
 func _on_bullet_added(node: Node):
 	if !node.has_signal("bullet_spawn_request"): return
@@ -50,6 +60,9 @@ func _on_bullet_added(node: Node):
 	if !node.has_signal("bullet_despawn_request"): return
 	if !node.bullet_despawn_request.is_connected(_return_bullet_to_pool):
 		node.bullet_despawn_request.connect(_return_bullet_to_pool)
+	if !node.has_signal("tutorial_bullet_attached"): return
+	if !node.tutorial_bullet_attached.is_connected(_on_tutorial_bullet_attached):
+		node.tutorial_bullet_attached.connect(_on_tutorial_bullet_attached)
 
 func _spawn_wrapped_bullet(spawn_position: Vector2, velocity: Vector2):
 	var bullet = _acquire_bullet()
@@ -85,6 +98,7 @@ func _update_spawn_point_position(delta):
 	bullet_spawn_point.global_position.y = _spawn_point_y
 
 func _spawn_new_bullet():
+	if !spawn_enabled: return
 	if !is_instance_valid(bullet_spawn_point): return
 
 	if use_patterns:
@@ -219,3 +233,9 @@ func set_spawn_interval(value: float):
 
 func set_current_bullet_velocity(value: float):
 	current_bullet_velocity = value
+
+func enable_spawning():
+	spawn_enabled = true
+
+func _on_tutorial_bullet_attached(bullet: RigidBody2D):
+	enable_spawning()
