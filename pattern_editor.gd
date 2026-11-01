@@ -8,13 +8,13 @@ extends Node2D
 @export var settings: UnitSettings
 @export var preview_settings: PreviewSettings
 @export var start_point: Node2D
-@export var current_pattern: BulletPattern
+@export var current_pattern: BulletPattern:
+	set(value):
+		current_pattern = value
+		if current_pattern == null: return
+		load_pattern()
 
 var pattern_bullets := []
-
-func _ready():
-	if Engine.is_editor_hint():
-		_load_pattern()
 
 func _process(_delta):
 	if Engine.is_editor_hint():
@@ -131,6 +131,12 @@ func _on_name_selected(path, pattern, dialog):
 	print("Pattern saved to %s with %d bullets" % [path, pattern.bullet_offsets.size()])
 
 func load_pattern():
+	if current_pattern == null:
+		load_pattern_dialogue()
+	else:
+		_load_current_pattern()
+
+func load_pattern_dialogue():
 	var dialog = EditorFileDialog.new()
 	dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILE
 	dialog.add_filter("*.tres", "Pattern Resources")
@@ -145,13 +151,16 @@ func _on_pattern_file_selected(path, dialog):
 	if !pattern: return
 
 	current_pattern = pattern
+	_load_current_pattern()
+
+func _load_current_pattern():
 	clear_bullets()
 
 	var start_pos = Vector2.ZERO
 	if start_point:
 		start_pos = start_point.global_position
 
-	for offset in pattern.bullet_offsets:
+	for offset in current_pattern.bullet_offsets:
 		var bullet = bullet_scene.instantiate()
 		bullet.global_position = start_pos + offset
 		bullet.set_meta("pattern_offset", offset)
@@ -159,7 +168,4 @@ func _on_pattern_file_selected(path, dialog):
 		bullet.set_owner(get_tree().edited_scene_root)
 		pattern_bullets.append(bullet)
 
-	print("Pattern loaded with %d bullets" % pattern.bullet_offsets.size())
-
-func _load_pattern():
-	pass
+	print("Pattern loaded with %d bullets" % current_pattern.bullet_offsets.size())
