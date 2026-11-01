@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="BulletPattern" format=3 uid="uid://164xd7r0mab0"]
+
+[ext_resource type="Script" uid="uid://6u2823lllhdc" path="res://bullet_pattern.gd" id="1_00j4b"]
+
+[resource]
+script = ExtResource("1_00j4b")
+bullet_offsets = Array[Vector2]([Vector2(194, -1884), Vector2(206, -2197), Vector2(-194, -1246), Vector2(-182, -1559), Vector2(-206, 6), Vector2(-194, -307), Vector2(194, -620), Vector2(206, -933)])

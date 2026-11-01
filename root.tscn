@@ -15,10 +15,9 @@
 [ext_resource type="Curve" uid="uid://dfsqhmydy48rl" path="res://jump_speed_upgrade_curve.tres" id="9_jump_speed_curve"]
 [ext_resource type="Script" uid="uid://cpyfi6snyc4us" path="res://checkmark_system.gd" id="10_checkmark"]
 [ext_resource type="Resource" uid="uid://cy4a1d6jnd84u" path="res://patterns/straight_pattern.tres" id="10_qwhpj"]
-
-[sub_resource type="Resource" id="Resource_qwhpj"]
-script = ExtResource("8_eji0w")
-bullet_offsets = Array[Vector2]([Vector2(0, 0)])
+[ext_resource type="Resource" uid="uid://b5lkxvcqju4rq" path="res://patterns/start_pattern.tres" id="10_r3r3k"]
+[ext_resource type="Resource" uid="uid://164xd7r0mab0" path="res://patterns/double_zigzag_pattern.tres" id="12_blcw0"]
+[ext_resource type="Resource" uid="uid://durrajgwrfeur" path="res://patterns/snake_pattern.tres" id="13_r3r3k"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6emhd"]
 size = Vector2(498, 20)
@@ -35,13 +34,13 @@ script = ExtResource("7_difficulty")
 player_path = NodePath("Player")
 bullet_holder_path = NodePath("BulletHolder")
 bullet_spawn_path = NodePath("BulletSpawn")
-jump_speed_base = 622
-jump_speed_max = 1300
+jump_speed_base = 670
+jump_speed_max = 1450
 jump_speed_upgrade_curve = ExtResource("9_jump_speed_curve")
-jump_speed_curve_checkpoint_count = 32
+jump_speed_curve_checkpoint_count = 24
 bullet_break_time_min = 0.5
-bullet_velocity_base = 260
-bullet_velocity_max = 400
+bullet_velocity_base = 290
+bullet_velocity_max = 290
 velocity_increase_per_100m = 25
 spawn_interval_min = 0.55
 
@@ -57,11 +56,12 @@ position = Vector2(0, -328)
 script = ExtResource("6_qt76e")
 follow_obj = NodePath("../Player")
 follow_offset = Vector2(0, -300)
+smoothing_speed = 40.0
 
 [node name="Player" parent="." unique_id=1232459265 node_paths=PackedStringArray("bullet_holder") instance=ExtResource("1_pq8q7")]
 bullet_holder = NodePath("../BulletHolder")
 attach_distance = 70.0
-auto_attach_range = 90.0
+auto_attach_range = 110.0
 auto_attach_frame_skip = 4
 
 [node name="BulletSpawnPoint" type="Node2D" parent="." unique_id=1856562774]
@@ -71,8 +71,8 @@ position = Vector2(0, -965)
 position = Vector2(0, -883)
 bullet_holder = NodePath("../BulletHolder")
 bullet_spawn_point = NodePath("../BulletSpawnPoint")
-predetermined_patterns = Array[ExtResource("8_eji0w")]([SubResource("Resource_qwhpj")])
-random_pattern_pool = Array[ExtResource("8_eji0w")]([ExtResource("9_eji0w"), ExtResource("10_qwhpj")])
+predetermined_patterns = Array[ExtResource("8_eji0w")]([ExtResource("10_r3r3k"), ExtResource("13_r3r3k"), ExtResource("12_blcw0"), ExtResource("10_qwhpj"), ExtResource("9_eji0w")])
+random_pattern_pool = Array[ExtResource("8_eji0w")]([ExtResource("9_eji0w"), ExtResource("10_qwhpj"), ExtResource("13_r3r3k")])
 
 [node name="CollisionShape2D" parent="BulletSpawn" index="0" unique_id=608612395]
 shape = SubResource("RectangleShape2D_6emhd")
@@ -128,4 +128,5 @@ horizontal_alignment = 2
 [node name="PokiBase" type="Node" parent="." unique_id=1173744218]
 script = ExtResource("8_bf3um")
 
+[editable path="Player"]
 [editable path="BulletSpawn"]

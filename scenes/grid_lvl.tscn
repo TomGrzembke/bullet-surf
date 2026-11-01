@@ -9,7 +9,7 @@
 [ext_resource type="Resource" uid="uid://cy6mepeox47bi" path="res://settings/preview_settings.tres" id="6_preview_settings"]
 [ext_resource type="PackedScene" uid="uid://bmvtsewyhtgba" path="res://bullet.tscn" id="7_bullet"]
 [ext_resource type="Script" uid="uid://bnh1cx3m7pf7k" path="res://pattern_editor.gd" id="8_pattern_editor"]
-[ext_resource type="Resource" uid="uid://cy4a1d6jnd84u" path="res://patterns/straight_pattern.tres" id="10_4u5df"]
+[ext_resource type="Resource" uid="uid://cy4a1d6jnd84u" path="res://patterns/straight_pattern.tres" id="10_3g75f"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_flrdo"]
 size = Vector2(255.77995, 247.80257)
@@ -60,20 +60,20 @@ bullet_scene = ExtResource("7_bullet")
 settings = ExtResource("3_settings")
 preview_settings = ExtResource("6_preview_settings")
 start_point = NodePath("../Player")
-current_pattern = ExtResource("10_4u5df")
+current_pattern = ExtResource("10_3g75f")
 
-[node name="@RigidBody2D@1825151" parent="PatternEditor" unique_id=40867637 instance=ExtResource("7_bullet")]
-position = Vector2(-6, -4)
-metadata/pattern_offset = Vector2(-194, -4)
+[node name="Bullet" parent="PatternEditor" unique_id=40867637 instance=ExtResource("7_bullet")]
+position = Vector2(-6, -933)
+metadata/pattern_offset = Vector2(0, -1240)
 
-[node name="@RigidBody2D@1825152" parent="PatternEditor" unique_id=319583796 instance=ExtResource("7_bullet")]
-position = Vector2(-6, -307)
-metadata/pattern_offset = Vector2(194, -319)
+[node name="@RigidBody2D@950435" parent="PatternEditor" unique_id=1134616567 instance=ExtResource("7_bullet")]
+position = Vector2(-6, -620)
+metadata/pattern_offset = Vector2(0, -620)
 
-[node name="@RigidBody2D@1825153" parent="PatternEditor" unique_id=1887222611 instance=ExtResource("7_bullet")]
-position = Vector2(-6, -630)
-metadata/pattern_offset = Vector2(-206, -630)
+[node name="@RigidBody2D@950436" parent="PatternEditor" unique_id=119960186 instance=ExtResource("7_bullet")]
+position = Vector2(-6, -319)
+metadata/pattern_offset = Vector2(0, -319)
 
-[node name="@RigidBody2D@1825154" parent="PatternEditor" unique_id=924659228 instance=ExtResource("7_bullet")]
-position = Vector2(0, -945)
-metadata/pattern_offset = Vector2(206, -945)
+[node name="@RigidBody2D@950437" parent="PatternEditor" unique_id=1855082464 instance=ExtResource("7_bullet")]
+position = Vector2(5, 0)
+metadata/pattern_offset = Vector2(0, 0)

@@ -18,6 +18,7 @@ var is_attached := false
 var target_bullet: RigidBody2D
 var attached_bullet: RigidBody2D
 var jump_start_position: Vector2
+var jump_target_position: Vector2
 var jump_duration: float
 var jump_elapsed: float
 var attach_offset: Vector2
@@ -100,8 +101,7 @@ func _update_jump(delta):
 	jump_elapsed += delta
 
 	var progress = min(jump_elapsed / jump_duration, 1.0)
-	var target_pos = target_bullet.global_position
-	global_position = jump_start_position.lerp(target_pos, progress)
+	global_position = jump_start_position.lerp(jump_target_position, progress)
 
 	var distance = global_position.distance_to(target_bullet.global_position)
 	if distance <= attach_distance:
@@ -183,6 +183,11 @@ func jump_to_bullet(bullet: RigidBody2D):
 	var distance = global_position.distance_to(bullet.global_position)
 	jump_duration = distance / jump_speed
 	jump_elapsed = 0.0
+	
+	var bullet_velocity = bullet.linear_velocity
+	var predicted_bullet_movement = bullet_velocity * jump_duration
+	jump_target_position = bullet.global_position + predicted_bullet_movement
+	
 	freeze = true
 
 func _on_jump_complete():
@@ -199,7 +204,7 @@ func _attach_to_bullet(bullet: RigidBody2D):
 	_mark_bullet_used(bullet)
 	_mark_bullet_in_use(bullet)
 	_invert_bullet_velocity(bullet)
-	_calculate_attach_offset(jump_start_position)
+	_calculate_attach_offset(global_position)
 	freeze = true
 
 func _mark_bullet_used(bullet: RigidBody2D):
