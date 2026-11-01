@@ -4,4 +4,4 @@
 
 [resource]
 script = ExtResource("1_00j4b")
-bullet_offsets = Array[Vector2]([Vector2(200, -2191), Vector2(200, -1878), Vector2(-200, -1565), Vector2(-200, -1252), Vector2(200, -626), Vector2(200, -939), Vector2(-200, -313), Vector2(-200, 0)])
+bullet_offsets = Array[Vector2]([Vector2(200, -2499), Vector2(200, -2142), Vector2(-200, -1785), Vector2(-200, -1428), Vector2(200, -714), Vector2(200, -1071), Vector2(-200, -357), Vector2(-200, 0)])

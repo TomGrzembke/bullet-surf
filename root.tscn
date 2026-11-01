@@ -16,7 +16,6 @@
 [ext_resource type="Script" uid="uid://cpyfi6snyc4us" path="res://checkmark_system.gd" id="10_checkmark"]
 [ext_resource type="Resource" uid="uid://b5lkxvcqju4rq" path="res://patterns/start_pattern.tres" id="10_r3r3k"]
 [ext_resource type="Resource" uid="uid://164xd7r0mab0" path="res://patterns/double_zigzag_pattern.tres" id="12_blcw0"]
-[ext_resource type="Resource" uid="uid://ctg80w5c8mxnq" path="res://patterns/invert_snake_pattern.tres" id="13_50g4q"]
 [ext_resource type="Resource" uid="uid://durrajgwrfeur" path="res://patterns/snake_pattern.tres" id="13_r3r3k"]
 [ext_resource type="PackedScene" uid="uid://bmvtsewyhtgba" path="res://bullet.tscn" id="19_50g4q"]
 
@@ -78,8 +77,8 @@ position = Vector2(0, -883)
 bullet_holder = NodePath("../BulletHolder")
 bullet_spawn_point = NodePath("../BulletSpawnPoint")
 tutorial_bullet = NodePath("../BulletHolder/StartBullet")
-predetermined_patterns = Array[ExtResource("8_eji0w")]([ExtResource("10_r3r3k"), ExtResource("9_eji0w"), ExtResource("12_blcw0"), ExtResource("13_r3r3k"), ExtResource("13_50g4q")])
-random_pattern_pool = Array[ExtResource("8_eji0w")]([ExtResource("9_eji0w"), ExtResource("13_r3r3k"), ExtResource("13_50g4q")])
+predetermined_patterns = Array[ExtResource("8_eji0w")]([ExtResource("10_r3r3k"), ExtResource("9_eji0w"), ExtResource("12_blcw0"), ExtResource("13_r3r3k")])
+random_pattern_pool = Array[ExtResource("8_eji0w")]([ExtResource("9_eji0w"), ExtResource("13_r3r3k")])
 
 [node name="CollisionShape2D" parent="BulletSpawn" index="0" unique_id=608612395]
 shape = SubResource("RectangleShape2D_6emhd")

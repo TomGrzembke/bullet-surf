@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_preview_settings")
 grid_x_division = 200.0
-grid_y_division = 313.0
+grid_y_division = 357.0
 grid_line_width = 6.0

@@ -77,6 +77,7 @@ func _process(delta):
 	_update_spawn_point_position(delta)
 	_return_distant_bullets_to_pool()
 	_cleanup_pattern_bullets()
+	_check_pattern_passed_spawn()
 
 func _update_spawn_point_position(delta):
 	if !player: return
@@ -125,6 +126,7 @@ func _spawn_pattern():
 		if !pattern: return
 
 		var spawn_base = bullet_spawn_point.global_position
+		spawn_base.y = _spawn_point_y
 		var min_y = 0.0
 		var max_y = 0.0
 
@@ -142,8 +144,6 @@ func _spawn_pattern():
 		last_pattern_y_extent = max_y - min_y
 		_pattern_spawn_y = _spawn_point_y
 		_pattern_spawn_time = Time.get_ticks_msec() / 1000.0
-	else:
-		_check_pattern_passed_spawn()
 
 func _get_next_pattern() -> BulletPattern:
 	if predetermined_patterns.is_empty() && random_pattern_pool.is_empty(): return null
