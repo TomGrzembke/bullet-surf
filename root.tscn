@@ -11,8 +11,11 @@
 [ext_resource type="Script" uid="uid://dl0pgo3ytyojy" path="res://difficulty_manager.gd" id="7_difficulty"]
 [ext_resource type="Script" uid="uid://4rdtlch43bdc" path="res://poki_base.gd" id="8_bf3um"]
 [ext_resource type="Script" uid="uid://6u2823lllhdc" path="res://bullet_pattern.gd" id="8_eji0w"]
+[ext_resource type="Resource" uid="uid://x3kn37b83ge6" path="res://patterns/zigzag_pattern.tres" id="9_eji0w"]
 [ext_resource type="Curve" uid="uid://dfsqhmydy48rl" path="res://jump_speed_upgrade_curve.tres" id="9_jump_speed_curve"]
 [ext_resource type="Script" uid="uid://cpyfi6snyc4us" path="res://checkmark_system.gd" id="10_checkmark"]
+[ext_resource type="Resource" uid="uid://b5lkxvcqju4rq" path="res://patterns/start_pattern.tres" id="10_r3r3k"]
+[ext_resource type="Resource" uid="uid://164xd7r0mab0" path="res://patterns/double_zigzag_pattern.tres" id="12_blcw0"]
 [ext_resource type="Resource" uid="uid://cy6mepeox47bi" path="res://settings/preview_settings.tres" id="13_blcw0"]
 [ext_resource type="Resource" uid="uid://durrajgwrfeur" path="res://patterns/snake_pattern.tres" id="13_r3r3k"]
 [ext_resource type="PackedScene" uid="uid://bmvtsewyhtgba" path="res://bullet.tscn" id="19_50g4q"]
@@ -75,7 +78,8 @@ position = Vector2(0, -883)
 bullet_holder = NodePath("../BulletHolder")
 bullet_spawn_point = NodePath("../BulletSpawnPoint")
 tutorial_bullet = NodePath("../BulletHolder/StartBullet")
-random_pattern_pool = Array[ExtResource("8_eji0w")]([ExtResource("13_r3r3k")])
+predetermined_patterns = Array[ExtResource("8_eji0w")]([ExtResource("10_r3r3k"), ExtResource("12_blcw0")])
+random_pattern_pool = Array[ExtResource("8_eji0w")]([ExtResource("13_r3r3k"), ExtResource("9_eji0w"), ExtResource("12_blcw0"), ExtResource("10_r3r3k")])
 preview_settings = ExtResource("13_blcw0")
 
 [node name="CollisionShape2D" parent="BulletSpawn" index="0" unique_id=608612395]
