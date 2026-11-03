@@ -16,6 +16,7 @@ signal tutorial_bullet_attached(bullet: RigidBody2D)
 @export var wrap_buffer: float = 100
 
 @export var bullet_velocity: float = 200
+const TUTORIAL_BULLET_VELOCITY  : int = 340
 
 
 @onready var click_area: Area2D = $ClickArea
@@ -51,8 +52,6 @@ func _physics_process(delta):
 		linear_velocity.y = 0
 	else:
 		linear_velocity.y = bullet_velocity
-	
-	#if _check_screen_wrap(): return
 
 	_reset_click_cooldown(delta)
 	_update_click_area()
@@ -171,12 +170,10 @@ func invert_velocity():
 func revert_velocity():
 	bullet_velocity = original_velocity
 
-func activate(spawn_position: Vector2, velocity: Vector2, can_wrap := true):
+func activate(spawn_position: Vector2, can_wrap := true):
 	bullet_activating.emit(self)
 	global_position = spawn_position
-	linear_velocity = velocity
-	bullet_velocity = velocity.y
-	original_velocity = velocity.y
+	linear_velocity = Vector2(0, original_velocity)
 	can_spawn_wrapped = can_wrap
 	has_spawned_wrapped = false
 	has_been_clicked = false
@@ -196,6 +193,7 @@ func mark_in_use():
 	is_in_use_by_player = true
 	if is_tutorial_bullet && !tutorial_used:
 		tutorial_used = true
+		bullet_velocity = TUTORIAL_BULLET_VELOCITY
 		tutorial_bullet_attached.emit(self)
 
 func set_as_tutorial_bullet():

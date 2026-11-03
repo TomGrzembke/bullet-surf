@@ -37,14 +37,12 @@ bullet_velocity = 0.0
 [node name="DifficultyManager" type="Node" parent="." unique_id=107323586]
 script = ExtResource("7_difficulty")
 player_path = NodePath("Player")
-bullet_holder_path = NodePath("BulletHolder")
-bullet_spawn_path = NodePath("BulletSpawn")
 jump_speed_base = 670
 jump_speed_max = 1750
 jump_speed_upgrade_curve = ExtResource("9_jump_speed_curve")
 jump_speed_curve_checkpoint_count = 24
 bullet_break_time_min = 0.5
-bullet_velocity_base = 290
+bullet_velocity_base = 1
 bullet_velocity_max = 290
 velocity_increase_per_100m = 25
 spawn_interval_min = 0.55

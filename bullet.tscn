@@ -16,7 +16,7 @@ gravity_scale = 0.0
 contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("1_v8qja")
-downward_bullet_velocity = -200.0
+bullet_velocity = 305.0
 
 [node name="Circle" type="Sprite2D" parent="." unique_id=686925077]
 modulate = Color(0.97237104, 0.49535888, 0.6088033, 1)

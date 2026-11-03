@@ -7,8 +7,6 @@ extends Node
 signal difficulty_updated(checkpoint: int, distance_m: float)
 
 @export var player_path: NodePath = NodePath("../Player")
-@export var bullet_holder_path: NodePath = NodePath("../BulletHolder")
-@export var bullet_spawn_path: NodePath = NodePath("../BulletSpawn")
 
 @export var checkpoint_distance_m := 25
 
@@ -31,7 +29,6 @@ signal difficulty_updated(checkpoint: int, distance_m: float)
 
 var player: Node2D
 var bullet_holder: Node
-var bullet_spawn: Node2D
 
 var current_checkpoint := 0
 
@@ -44,7 +41,6 @@ func _initialize_node_references():
 	var root = get_parent()
 	player = root.get_node("Player")
 	bullet_holder = root.get_node("BulletHolder")
-	bullet_spawn = root.get_node("BulletSpawn")
 
 func _process(_delta):
 	if !player: return
@@ -60,8 +56,6 @@ func _process(_delta):
 func _update_difficulty(checkpoint: int):
 	var new_velocity = _calculate_bullet_velocity(checkpoint)
 	_update_player_difficulty(checkpoint)
-	_update_bullet_velocities(new_velocity)
-	_update_spawn_difficulty(checkpoint, new_velocity)
 
 func _calculate_bullet_velocity(checkpoint: int) -> float:
 	var velocity = bullet_velocity_base + (_get_progression_multiplier(checkpoint) * velocity_increase_per_100m)
@@ -79,24 +73,6 @@ func _update_player_difficulty(checkpoint: int):
 	if player.has_method("set_bullet_break_time_base"):
 		player.set_bullet_break_time_base(new_break_time)
 
-func _update_bullet_velocities(velocity: float):
-	if !bullet_holder:
-		return
-
-	for bullet in bullet_holder.get_children():
-		if bullet.has_method("set_bullet_velocity"):
-			bullet.set_bullet_velocity(velocity)
-
-func _update_spawn_difficulty(checkpoint: int, velocity: float):
-	if !bullet_spawn:
-		return
-
-	var new_interval = spawn_interval_base - (_get_progression_multiplier(checkpoint) * interval_decrease_per_100m)
-	new_interval = max(new_interval, spawn_interval_min)
-	if bullet_spawn.has_method("set_spawn_interval"):
-		bullet_spawn.set_spawn_interval(new_interval)
-	if bullet_spawn.has_method("set_current_bullet_velocity"):
-		bullet_spawn.set_current_bullet_velocity(velocity)
 
 func _get_progression_multiplier(checkpoint: int) -> float:
 	return checkpoint * checkpoint_distance_m / 100.0

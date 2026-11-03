@@ -1,6 +1,4 @@
-# Spawns bullets at regular intervals from a spawn point
-# Handles bullet wrapping requests from existing bullets
-# Spawn interval and bullet velocity are controlled by difficulty manager
+# Spawns bullets with patterns with provided templates 
 
 extends Node2D
 
@@ -20,7 +18,7 @@ extends Node2D
 @export var lookahead_distance: float = 900.0
 @export var minimal_distance: float = 100.0
 @export var spawn_point_move_speed: float = 5000.0
-@export var spawn_enabled: bool = false
+@export var start_spawn_enabled: bool = false
 @export var min_pattern_interval: float = 0.3
 
 @export var preview_settings: PreviewSettings
@@ -31,7 +29,6 @@ const BULLET_HEIGHT: float = BULLET_COLLISION_RADIUS * 2.0
 @onready var bullet_pool: Node = $BulletPool
 
 var current_spawntime: float = 0.0
-var current_bullet_velocity: float = 200.0
 var player: Node2D
 var player_start_position: Vector2
 var pattern_index: int = 0
@@ -41,7 +38,6 @@ var pattern_bullets: Array = []
 var _pattern_highest_bullet_y: float = 0.0
 var _pattern_lowest_bullet_y: float = 0.0
 var _pattern_spawn_time: float = 0.0
-var _pattern_bullet_velocity: float = 0.0
 var _last_pattern_spawn_time: float = 0.0
 var _spawn_point_y: float = 0.0
 var _player_last_y: float = 0.0
@@ -61,7 +57,6 @@ func _ready():
 		if tutorial_bullet.has_signal("tutorial_bullet_attached"):
 			if !tutorial_bullet.tutorial_bullet_attached.is_connected(_on_tutorial_bullet_attached):
 				tutorial_bullet.tutorial_bullet_attached.connect(_on_tutorial_bullet_attached)
-		tutorial_bullet.linear_velocity = Vector2(0, current_bullet_velocity)
 
 func _on_bullet_added(node: Node):
 	if !node.has_signal("bullet_spawn_request"): return
@@ -111,7 +106,7 @@ func _update_spawn_point_position(delta):
 	bullet_spawn_point.global_position.y = _spawn_point_y
 
 func _spawn_new_bullet():
-	if !spawn_enabled: return
+	if !start_spawn_enabled: return
 	if !is_instance_valid(bullet_spawn_point): return
 
 	if use_patterns:
@@ -124,7 +119,7 @@ func _spawn_single_bullet():
 	var spawn_position = bullet_spawn_point.global_position
 	spawn_position.y = _spawn_point_y
 	spawn_position.x += _get_random_x_offset()
-	bullet.activate(spawn_position, Vector2(0, current_bullet_velocity))
+	bullet.activate(spawn_position)
 
 func _spawn_pattern():
 	if pattern_bullets.is_empty():
@@ -139,7 +134,7 @@ func _spawn_pattern():
 		for offset in pattern.bullet_offsets:
 			var bullet = _acquire_bullet()
 			var spawn_position = spawn_base + offset
-			bullet.activate(spawn_position, Vector2(0, current_bullet_velocity))
+			bullet.activate(spawn_position)
 			pattern_bullets.append(bullet)
 
 			if offset.y < min_y:
@@ -152,7 +147,6 @@ func _spawn_pattern():
 		_pattern_highest_bullet_y = _spawn_point_y + min_y
 		_pattern_lowest_bullet_y = _spawn_point_y + max_y
 		_pattern_spawn_time = Time.get_ticks_msec() / 1000.0
-		_pattern_bullet_velocity = current_bullet_velocity
 		_last_pattern_spawn_time = _pattern_spawn_time
 
 func _get_next_pattern() -> BulletPattern:
@@ -215,7 +209,8 @@ func _check_pattern_passed_spawn():
 	if pattern_bullets.is_empty(): return
 
 	var time_elapsed = (Time.get_ticks_msec() / 1000.0) - _pattern_spawn_time
-	var bullet_distance = _pattern_bullet_velocity * time_elapsed
+	#var bullet_distance = _pattern_bullet_velocity * time_elapsed
+	var bullet_distance = 500 * time_elapsed
 	var current_lowest_bullet_y = _pattern_lowest_bullet_y + bullet_distance
 
 	var spawn_point_moved_up = _pattern_spawn_y - _spawn_point_y
@@ -241,11 +236,8 @@ func _cleanup_pattern_bullets():
 func set_spawn_interval(value: float):
 	bullet_spawn_interval_base = value
 
-func set_current_bullet_velocity(value: float):
-	current_bullet_velocity = value
-
 func enable_spawning():
-	spawn_enabled = true
+	start_spawn_enabled = true
 
-func _on_tutorial_bullet_attached(bullet: RigidBody2D):
+func _on_tutorial_bullet_attached(_bullet: RigidBody2D):
 	enable_spawning()
